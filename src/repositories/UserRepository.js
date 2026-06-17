@@ -1,5 +1,10 @@
 const prisma = require('../configs/db');
 
-const createUser = (input) => {
-    return prisma.User.create(input);
-}
+
+const userRepository = {
+    create(data) { 
+        return prisma.User.create(data);
+    }
+};
+
+module.exports = userRepository;

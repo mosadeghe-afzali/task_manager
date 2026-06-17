@@ -7,9 +7,8 @@
                 ثبت نام
             </h2>
 
-            <form class="space-y-4">
+            <form class="space-y-4" action="/register" method="POST">
 
-                <!-- Name -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700">نام</label>
                     <input type="text" name="name"
@@ -17,7 +16,6 @@
                         placeholder="نام خود را وارد کنید" />
                 </div>
 
-                <!-- Email -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700">ایمیل</label>
                     <input type="email" name="email"
@@ -25,7 +23,6 @@
                         placeholder="example@gmail.com" />
                 </div>
 
-                <!-- Password -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700">رمز عبور</label>
                     <input type="password" name="password"
@@ -33,7 +30,6 @@
                         placeholder="********" />
                 </div>
 
-                <!-- Confirm Password -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700">تکرار رمز عبور</label>
                     <input type="password" name="password_confirmation"
@@ -41,14 +37,32 @@
                         placeholder="********" />
                 </div>
 
-                <!-- Button -->
-                <button type="submit"
-                    class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
-                    ایجاد حساب
-                </button>
+                <% if (errors && errors.length> 0) { %>
+                    <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-md shadow-sm">
+                        <div class="flex items-center mb-2">
+                            <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <h3 class="text-sm font-semibold text-red-800">لطفاً خطاهای زیر را برطرف کنید:</h3>
+                        </div>
+                        <ul class="list-disc list-inside space-y-1">
+                            <% errors.forEach(function(error) { %>
+                                <li class="text-sm text-red-700 font-medium">
+                                    <%= error.msg %>
+                                </li>
+                                <% }); %>
+                        </ul>
+                    </div>
+                    <% } %>
+
+                        <button type="submit"
+                            class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+                            ایجاد حساب
+                        </button>
 
             </form>
-            <!-- Bottom link -->
             <p class="text-center text-sm text-gray-600 mt-6">
                 حساب کاربری دارید؟
                 <a href="/login" class="text-blue-600 hover:underline font-medium">

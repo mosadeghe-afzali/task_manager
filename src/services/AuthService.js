@@ -1,7 +1,6 @@
-const { log } = require("node:console")
-
+const userRepository = require('../repositories/UserRepository')
 const register = (req, res) => {
-
+    return userRepository.create(req)
 }
 
 const login = (req, res) => {
