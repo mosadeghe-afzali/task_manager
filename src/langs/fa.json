@@ -1,0 +1,16 @@
+{
+  "validation": {
+    "required": "وارد کردن فیلد {{field}} الزامی است.",
+    "email": "لطفاً یک ایمیل معتبر وارد کنید.",
+    "minLength": "فیلد {{field}} باید حداقل {{count}} کاراکتر باشد.",
+    "string": "فیلد {{field}} باید شامل حروف باشد",
+    "passwordComplexity": "رمز عبور باید حداقل شامل یک حرف و یک عدد باشد.",
+    "passwordMismatch": "تأیید رمز عبور با رمز عبور مطابقت ندارد."
+  },
+  "attributes": {
+    "name": "نام",
+    "email": "ایمیل",
+    "password": "پسورد",
+    "password_confirmation": "تایید پسورد"
+  }
+}

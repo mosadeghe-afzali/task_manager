@@ -10,26 +10,27 @@ const handleValidationErrors = (req, res, next) => {
 
 const Registervalidator = [
     body('name')
-        .notEmpty().withMessage('Name is required')
-        .isString().withMessage('Name must be a string')
+        .notEmpty().withMessage((value, { req, path }) => req.t('validation.required', { field: req.t('attributes.' + path) }))
+        .isLength({ min: 6 }).withMessage((value, { req, path }) => req.t('validation.minLength', { field: req.t('attributes.' + path), count: 6 }))
+        .isString().withMessage((value, { req, path }) => req.t('validation.string', { field: req.t('attributes.' + path) }))
         .trim(),
 
     body('email')
-        .notEmpty().withMessage('Email is required')
-        .isEmail().withMessage('Please provide a valid email address')
+        .notEmpty().withMessage((value, { req, path }) => req.t('validation.required', { field: req.t('attributes.' + path) }))
+        .isEmail().withMessage((value, { req, path }) => req.t('validation.email'))
         .normalizeEmail(),
 
     body('password')
-        .notEmpty().withMessage('Password is required')
-        .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
+        .notEmpty().withMessage((value, { req, path }) => req.t('validation.required', { field: req.t('attributes.' + path) }))
+        .isLength({ min: 8 }).withMessage((value, { req, path }) => req.t('validation.minLength', { field: req.t('attributes.' + path), count: 8 }))
         .matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/)
-        .withMessage('Password must contain at least one letter and one number'),
+        .withMessage((value, { req, path }) => req.t('validation.passwordComplexity')),
 
     body('password_confirmation')
-        .notEmpty().withMessage('Confirm password is required')
+        .notEmpty().withMessage((value, { req, path }) => req.t('validation.required', { field: req.t('attributes.' + path) }))
         .custom((value, { req }) => {
             if (value !== req.body.password) {
-                throw new Error('Password confirmation does not match password');
+                throw new Error(req.t('validation.passwordMismatch'));
             }
             return true;
         }),
