@@ -220,3 +220,13 @@ give database schema SQL/Mongo
 or build step-by-step roadmap (Day 1 → Day 10 plan)
 
 Just tell me 👍
+
+npm install prisma @types/pg --save-dev
+npm install @prisma/client @prisma/adapter-pg pg dotenv
+
+npx prisma
+npx prisma init --output ../generated/prisma
+set models in scima.prisma
+npx prisma migrate dev --name init
+
+npx prisma generate

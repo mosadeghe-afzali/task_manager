@@ -5,6 +5,14 @@ const userRepository = {
         return await prisma.User.create({
             data: data
         });
+    },
+
+    async find(data) {
+        filed: data.filed;
+        value = data.value;
+        return await prisma.User.findUnique({
+            where: { filed: value }
+        });
     }
 };
 
