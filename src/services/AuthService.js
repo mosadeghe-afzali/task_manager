@@ -1,6 +1,6 @@
 const userRepository = require('../repositories/UserRepository')
-const register = (req, res) => {
-    return userRepository.create(req)
+const register = async (req, res) => {
+    return await userRepository.create(req)
 }
 
 const login = (req, res) => {

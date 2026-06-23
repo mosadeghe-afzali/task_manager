@@ -11,7 +11,7 @@ const handleValidationErrors = (req, res, next) => {
 const Registervalidator = [
     body('name')
         .notEmpty().withMessage((value, { req, path }) => req.t('validation.required', { field: req.t('attributes.' + path) }))
-        .isLength({ min: 6 }).withMessage((value, { req, path }) => req.t('validation.minLength', { field: req.t('attributes.' + path), count: 6 }))
+        .isLength({ min: 2 }).withMessage((value, { req, path }) => req.t('validation.minLength', { field: req.t('attributes.' + path), count: 6 }))
         .isString().withMessage((value, { req, path }) => req.t('validation.string', { field: req.t('attributes.' + path) }))
         .trim(),
 

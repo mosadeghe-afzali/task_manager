@@ -1,9 +1,10 @@
-const prisma = require('../configs/db');
-
+const { prisma } = require('../configs/db');
 
 const userRepository = {
-    create(data) { 
-        return prisma.User.create(data);
+    async create(data) {
+        return await prisma.User.create({
+            data: data
+        });
     }
 };
 
