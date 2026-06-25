@@ -1,13 +1,19 @@
 const userRepository = require('../repositories/UserRepository')
-const register = async (req, res) => {
-    return await userRepository.create(req)
-}
+const bcrypt = require('bcrypt');
 
-const login = (req, res) => {
-    
+const register = async (req) => {
+    const data = req.body;
+    data.password = await userRepository.encryptPassword(data.password);
+    const user = await userRepository.create(data)
+    req.login(user, (err) => {
+        if (err) {
+            return next(err);
+        }
+    });
+
+    return user;
 }
 
 module.exports = {
-    register,
-    login
+    register
 }

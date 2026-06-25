@@ -1,4 +1,5 @@
 const { body, validationResult } = require('express-validator');
+const userRepository = require('../repositories/UserRepository');
 
 const handleValidationErrors = (req, res, next) => {
     const errors = validationResult(req);
@@ -18,6 +19,13 @@ const Registervalidator = [
     body('email')
         .notEmpty().withMessage((value, { req, path }) => req.t('validation.required', { field: req.t('attributes.' + path) }))
         .isEmail().withMessage((value, { req, path }) => req.t('validation.email'))
+        .custom(async (value, { req, path }) => {
+            const user = await userRepository.find({field: 'email', value: value});
+            console.log(user, 'in valllllll')
+            if (user) {
+                throw new Error(req.t('validation.unique', {field: req.t('attributes.' + path)}));
+            }
+        })
         .normalizeEmail(),
 
     body('password')

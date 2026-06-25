@@ -5,6 +5,10 @@ const path = require("path");
 const router = require("./src/routes");
 const i18next = require('i18next');
 const middleware = require('i18next-http-middleware');
+const session = require('express-session');
+const passport = require('./src/helpers/passport');
+const cookieParser = require('cookie-parser')
+const flash = require('connect-flash');
 
 i18next.use(middleware.LanguageDetector).init({
   fallbackLng: 'fa',
@@ -32,10 +36,20 @@ app.set("views", path.join(__dirname, "src", "views"));
 //   next();
 // });
 
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 24 * 60 * 60 * 1000 }
+}))
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(middleware.handle(i18next));
 app.use(express.static(path.join(__dirname, "src", "public"))); // دسترسی به پوشه استایل و عکس‌ها
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(flash());
 
 app.use("/", router);
 

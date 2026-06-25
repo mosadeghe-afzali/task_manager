@@ -230,3 +230,12 @@ set models in scima.prisma
 npx prisma migrate dev --name init
 
 npx prisma generate
+
+
+
+
+connect to postgress:
+sudo -i -u postgres
+psql
+ALTER USER postgres PASSWORD 'your_new_password';
+Type \q to exit.
