@@ -9,7 +9,7 @@ const getRegister = (req, res) => {
   });
 };
 
-const register = async (req, res) => {
+const register = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.render("auth/register", {
@@ -19,15 +19,23 @@ const register = async (req, res) => {
       request: req.body,
     });
   }
-  delete req.body.password_confirmation;
-  const user = await authService.register(req);
-  console.log("userrrrrrrrrrrrr", user);
 
-  res.render("index.ejs", {
-    title: "خانه",
-    errors: [],
-    user: user,
-  });
+  try {
+    delete req.body.password_confirmation;
+    console.log(req.body, 'bodddyyyyyyyyy')
+    const user = await authService.register(req.body);
+
+    req.login(user, (err) => {
+      if (err) return next(err);
+      
+      console.log("کاربر با موفقیت ثبت نام و لاگین شد");
+      return res.redirect('/');
+    });
+
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
 };
 
 const getLogin = (req, res) => {
