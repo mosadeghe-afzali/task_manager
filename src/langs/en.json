@@ -2,11 +2,12 @@
   "validation": {
     "required": "The {{field}} field is required.",
     "email": "Please enter a valid email address.",
-    "minLength": "The {{field}} must be at less {{count}} characters long.",
+    "length": "The {{field}} must be between {{min}} and {{max}} characters long.",
     "string": "The {{field}} must be a string.",
     "passwordComplexity": "Password must contain at least one letter and one number.",
     "passwordMismatch": "Password confirmation does not match password.",
-    "unique": "The {{field}} already exists."
+    "unique": "The {{field}} already exists.",
+    "numeric": "The {{ field }} must be number"
   },
   "attibutes": {
     "name": "name",

@@ -1,7 +1,7 @@
 const { prisma } = require('../configs/db');
 const bcrypt = require('bcrypt');
 
-const userRepository = {
+const UserRepository = {
     async create(data) {
         return await prisma.User.create({
             data: data
@@ -27,4 +27,4 @@ const userRepository = {
     }
 };
 
-module.exports = userRepository;
+module.exports = UserRepository;
