@@ -8,7 +8,8 @@
     "passwordMismatch": "تأیید رمز عبور با رمز عبور مطابقت ندارد.",
     "unique": "{{field}} قبلا ثبت شده و تکراری است.",
     "numeric": "{{ field }} باید عدد باشد.",
-    "exists": "{{ field }} یافت نشد."
+    "exists": "{{ field }} یافت نشد.",
+    "array": "{{ field }} باید آرایه باشد."
   },
   "attributes": {
     "name": "نام",

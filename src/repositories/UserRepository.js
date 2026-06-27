@@ -15,6 +15,9 @@ const UserRepository = {
             where: { [field]: value }
         });
     },
+    async findMany() {
+        return await prisma.User.findMany();
+    },
     async verifyPassword(user, password) {
         return await bcrypt.compare(password, user.password)
     },

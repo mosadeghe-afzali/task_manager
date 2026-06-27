@@ -26,7 +26,8 @@
     "i18next-http-middleware": "^3.9.7",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
-    "pg": "^8.22.0"
+    "pg": "^8.22.0",
+    "tom-select": "^2.6.1"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.3.1",

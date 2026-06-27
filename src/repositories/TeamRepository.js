@@ -1,15 +1,15 @@
 const { prisma } = require('../configs/db');
 
 const TeamRepository = {
-  async create(data) {
-    return await prisma.User.create({
-      data: data
+  async create(tx, input) {
+    return await tx.Team.create({
+      data: input
     });
   },
 
-  async find(data) {
-    field = data.field;
-    value = data.value;
+  async find(input) {
+    field = input.field;
+    value = input.value;
     return await prisma.Team.findUnique({
       where: { [field]: value }
     });

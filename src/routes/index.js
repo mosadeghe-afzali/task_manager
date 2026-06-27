@@ -5,6 +5,8 @@ const { isAuthenticated } = require('../middlewares/CheckAuthentication');
 const Registervalidator = require('../validators/RegisterValidator')
 const ProjectController = require('../controllers/PorjectController');
 const CreateProjectValidator = require('../validators/CreateProjectValidator');
+const TeamController = require('../controllers/TeamController');
+const CreateTeamValidator = require('../validators/CreateTeamValidator');
 const router = express.Router();
 
 router.get('/', isAuthenticated, HomePageController);
@@ -17,5 +19,8 @@ router.get('/logout', AuthController.logout);
 
 router.get('/projects/create', ProjectController.create)
 router.post('/projects', CreateProjectValidator, ProjectController.store)
+
+router.get('/teams/create', TeamController.create)
+router.post('/teams', CreateTeamValidator, TeamController.store)
 
 module.exports = router;
