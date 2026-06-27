@@ -1,7 +1,8 @@
 const { body } = require("express-validator");
 const userRepository = require("../repositories/UserRepository");
 const UserRepository = require("../repositories/UserRepository");
-
+const TeamRepository = require("../repositories/TeamRepository");
+console.log(body)
 const CreateTeamValidator = [
   body("name")
     .notEmpty()
@@ -41,6 +42,16 @@ const CreateTeamValidator = [
         field: req.t("attributes." + path),
       }),
     )
+    .custom(async (value, { req, path }) => {
+
+      team = TeamRepository.find({ field: 'slug', value: value });
+      if (team) {
+        throw new Error(
+          req.t("validation.unique", { field: req.t("attributes." + path) }),
+        );
+      }
+      return true;
+    })
     .trim(),
   body("userIds")
     .notEmpty()

@@ -17,7 +17,8 @@
     "password": "پسورد",
     "password_confirmation": "تایید پسورد",
     "teamId": "شناسه تیم",
-    "description": "توضیحات"
+    "description": "توضیحات",
+    "slug": "نامک"
 
   }
 }

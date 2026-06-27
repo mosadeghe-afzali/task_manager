@@ -31,7 +31,7 @@
             <label for="userIds" class="block text-sm font-semibold text-slate-700 mb-2">اعضای تیم *</label>
             <p class="text-xs text-slate-400 mb-2">اعضای مورد نظر خود را جستجو و انتخاب کنید.</p>
 
-            <select id="userIds" name="userIds" multiple required class="tom-select w-full">
+            <select id="userIds" name="userIds[]" multiple required class="tom-select w-full">
 
               <% if (typeof users !=='undefined' && users.length> 0) { %>
                 <% users.forEach(function(user) { %>

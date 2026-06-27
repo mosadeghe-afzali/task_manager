@@ -16,11 +16,11 @@ const users = await userService.findMany();
 
 const store = async (req, res, next) => {
   const users = await userService.findMany();
-
+  console.log(req.body)
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return res.render('projects/create.ejs', {
+    return res.render('teams/create.ejs', {
       title: "ایجاد تیم",
       errors: errors.array(),
       request: req.body,
