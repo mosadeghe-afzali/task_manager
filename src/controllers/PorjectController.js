@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
-const ProjectService = require('../services/ProjectService');
+const projectService = require('../services/ProjectService');
+const teamService = require('../services/TeamService');
 const create = (req, res) => {
 
   res.render('projects/create.ejs', {
@@ -11,6 +12,7 @@ const create = (req, res) => {
 
 const store = (req, res, next) => {
   const errors = validationResult(req);
+  const teams = teamService.findMany();
 
   if (!errors.isEmpty()) {
     return res.render('projects/create.ejs', {
@@ -20,7 +22,7 @@ const store = (req, res, next) => {
     })
   }
 
-  const project = ProjectService.store(req.body)
+  const project = projectService.store(req.body)
 
   res.redirect('/');
 }

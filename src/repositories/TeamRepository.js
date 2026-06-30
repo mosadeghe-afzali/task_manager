@@ -1,9 +1,9 @@
-const { prisma } = require('../configs/db');
+const { prisma } = require("../configs/db");
 
 const TeamRepository = {
   async create(tx, input) {
     return await tx.Team.create({
-      data: input
+      data: input,
     });
   },
 
@@ -11,10 +11,13 @@ const TeamRepository = {
     field = input.field;
     value = input.value;
     return await prisma.Team.findUnique({
-      where: { [field]: value }
+      where: { [field]: value },
     });
   },
 
+  async findMany() {
+    return await prisma.Team.findMany();
+  },
 };
 
 module.exports = TeamRepository;

@@ -18,7 +18,10 @@ const store = async (input) => {
     return team;
   });
 };
-
+const findMany = async () => {
+  return await teamRepository.findMany();
+};
 module.exports = {
   store,
+  findMany
 };
