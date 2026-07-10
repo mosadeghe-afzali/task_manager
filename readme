@@ -239,6 +239,7 @@ sudo -i -u postgres
 psql
 ALTER USER postgres PASSWORD 'your_new_password';
 Type \q to exit.
+http://127.0.0.1/pgadmin4
 
 
 گام اول: ساخت ساختار اصلی Layout (منوی بالا و منوی کناری)
@@ -340,7 +341,19 @@ Type \q to exit.
 
 
 
+Attachment {
+  id
 
+  taskId
+
+  path
+
+  size
+
+  mime
+
+  uploadedByI
+}
 
 
 

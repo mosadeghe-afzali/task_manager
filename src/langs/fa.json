@@ -9,7 +9,9 @@
     "unique": "{{field}} قبلا ثبت شده و تکراری است.",
     "numeric": "{{ field }} باید عدد باشد.",
     "exists": "{{ field }} یافت نشد.",
-    "array": "{{ field }} باید آرایه باشد."
+    "array": "{{ field }} باید آرایه باشد.",
+    "date": "{{field}}  باید تاریخ با فرمت معتبر باشد.",
+    "after_date": "{{field}}  باید بزرگتر از فیلد {{ after }}  باشد"
   },
   "attributes": {
     "name": "نام",
@@ -18,7 +20,13 @@
     "password_confirmation": "تایید پسورد",
     "teamId": "شناسه تیم",
     "description": "توضیحات",
-    "slug": "نامک"
+    "slug": "نامک",
+    "startDate": "تاریخ شروع",
+    "endDate": "تاریخ پایان",
+    "status": "وضعیت",
+    "key": "کلید",
+    "firstName": "نام",
+    "lastName": "نام خانوادگی"
 
   }
 }

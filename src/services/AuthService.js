@@ -1,5 +1,4 @@
 const userRepository = require('../repositories/UserRepository')
-const bcrypt = require('bcrypt');
 
 const register = async (userData) => {
     userData = {

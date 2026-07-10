@@ -1,69 +1,84 @@
 const { validationResult } = require("express-validator");
 const authService = require("../services/AuthService");
-const passport = require('passport')
-
-const getRegister = (req, res) => {
-  res.render("auth/register.ejs", {
-    title: "ثبت نام",
-    errors: [],
-  });
-};
+const userService = require('../services/UserService');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 const register = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.render("auth/register", {
-      title: "ثبت نام",
+    const formattedErrors = {};
+    errors.array().forEach(err => {
+      if (!formattedErrors[err.path]) {
+        formattedErrors[err.path] = err.msg;
+      }
+    });
+    return res.status(422).json({
       success: false,
-      errors: errors.array(),
-      request: req.body,
+      message: "درخواست شما با خطا مواجه شد.",
+      errors: formattedErrors
     });
   }
 
   try {
     delete req.body.password_confirmation;
-    console.log(req.body, 'bodddyyyyyyyyy')
+
     const user = await authService.register(req.body);
 
-    req.login(user, (err) => {
-      if (err) return next(err);
-      
-      console.log("کاربر با موفقیت ثبت نام و لاگین شد");
-      return res.redirect('/');
+    const payload = { id: user.id, email: user.email };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+    return res.status(201).json({
+      success: true,
+      message: "ثبت‌نام با موفقیت انجام شد.",
+      data: {
+        token: `Bearer ${token}`,
+        user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName }
+      }
     });
 
   } catch (error) {
-    console.error(error);
-    next(error);
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
-const getLogin = (req, res) => {
-  const errors = req.flash('error');
+const login = async (req, res) => {
+  const { email, password } = req.body;
 
-  res.render("auth/login.ejs", {
-    title: "ورود",
-    error: errors.length > 0 ? errors[0] : null
-  });
-};
+  try {
+    const user = await userService.find({ field: 'email', value: email })
+    if (!user) return res.status(404).json({ success: false, message: "کاربر یافت نشد." });
 
-const login = passport.authenticate('local', {
-  successRedirect: '/',
-  failureRedirect: '/login',
-  failureFlash: true,
-});
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ success: false, message: "رمز عبور اشتباه است." });
+
+    const payload = { id: user.id, email: user.email };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+    res.json({
+      success: true,
+      message: "درخواست با موفقیت انجام شد.",
+      data: {
+        token: `Bearer ${token}`,
+        user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
+
 const logout = (req, res, next) => {
-  req.logout(function(err) {
-    if(err) return next(err);
-
-    res.redirect('/login')
-  })
-  return;
+  return res.json({ success: true, message: "با موفقیت خارج شدید." });
 }
 
 module.exports = {
-  getRegister,
-  getLogin,
   login,
   register,
   logout

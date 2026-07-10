@@ -15,11 +15,16 @@ datasource db {
 model User {
   id            Int               @id @default(autoincrement())
   email         String            @unique @db.VarChar(255)
-  name          String?           @db.VarChar(100)
+  firstName     String?           @db.VarChar(100)
+  lastName      String?           @db.VarChar(100)
   password      String            @db.VarChar(255)
-  
-  memberships   TeamMembership[]
-  Tasks Task[]
+  isActive Boolean @default(true)
+  avatar        String?
+  lastLoginAt   DateTime?
+  teamMembers   TeamMember[]
+  reportedTasks Task[] @relation("ReporterTasks")
+  assignedTasks Task[] @relation("AssignedTasks")
+  projectMembers  ProjectMember[]
   comments      Comment[]
   notifications Notification[]
 
@@ -32,47 +37,50 @@ model User {
 model Team {
   id          Int              @id @default(autoincrement())
   name        String           @db.VarChar(255)
-  slug        String           @unique @db.VarChar(100)
-  
-  members     TeamMembership[]
-  projects    Project[]
+  description   String?
+  projectId     Int
 
+  teamMembers     TeamMember[]
+  project Project @relation(fields:[projectId], references:[id], onDelete:Cascade)
+  tasks Task[]
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
 
+  @@index([projectId])
+  @@unique([projectId,name])
   @@map("teams")
 }
 
-model TeamMembership {
+model TeamMember {
   id      Int      @id @default(autoincrement())
   teamId Int
   userId Int
   role    TeamRole @default(MEMBER)
+  joinedAt      DateTime @default(now())
 
   team    Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
   user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
+  updatedAt   DateTime         @updatedAt
 
   @@unique([teamId, userId])
-  @@map("team_memberships")
-}
-
-enum TeamRole {
-  OWNER    @map("owner")
-  LEAD     @map("lead")
-  MEMBER   @map("member")
-  GUEST    @map("guest")
+  @@map("team_members")
 }
 
 model Project {
   id      Int      @id @default(autoincrement())
-  teamId Int
   name    String   @db.VarChar(500)
   description String? @db.Text
-  
-  team    Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  key           String    @unique @db.VarChar(20)
+  icon          String?
+  status        ProjectStatus
+  startDate     DateTime?
+  endDate       DateTime?
   tasks   Task[]
+  teams   Team[]
+  members ProjectMember[]
+  statuses TaskStatus[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -80,21 +88,56 @@ model Project {
   @@map("projects")
 }
 
+model ProjectMember {
+  id            Int @id @default(autoincrement())
+  projectId     Int
+  userId        Int
+  role          ProjectRole
+  joinedAt      DateTime @default(now())
+
+  project    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId,userId])
+  @@map("project_members")
+}
+
 model Task {
   id          Int          @id @default(autoincrement())
   projectId  Int
+  teamId     Int?
   assigneeId Int?
+  reporterId Int?
+  issueNumber     Int
   title       String       @db.VarChar(500)
-  status      TaskStatus   @default(ToDo)
-  priority    TaskPriority @default(Medium)
+  description     String?
+  statusId Int
+  priority    TaskPriority @default(MEDIUM)
+  estimatedHours Float?
+  spentHours Float?
+  position Int?
 
+  parentTaskId Int?
+  parent Task? @relation("TaskHierarchy", fields:[parentTaskId], references:[id])
+  children Task[] @relation("TaskHierarchy")
   project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  assignee    User?        @relation(fields: [assigneeId], references: [id]) 
+  reporter    User?        @relation("ReporterTasks", fields:[reporterId], references:[id])
   comments    Comment[]    
-
+  assignee User?           @relation("AssignedTasks", fields:[assigneeId], references:[id])
+  team Team?               @relation(fields:[teamId], references:[id])
+  status TaskStatus        @relation(fields:[statusId], references:[id])
+  startDate       DateTime?
+  dueDate         DateTime?
+  completedAt     DateTime?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
+  @@index([projectId])
+  @@index([assigneeId])
+  @@unique([projectId,issueNumber])
   @@map("tasks")
 }
 
@@ -102,7 +145,7 @@ model Comment {
   id        Int      @id @default(autoincrement())
   taskId   Int  
   userId   Int
-  comment   String   @db.Text
+  content   String   @db.Text
 
   task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id]) 
@@ -116,9 +159,11 @@ model Comment {
 model Notification {
   id          Int                @id @default(autoincrement())
   userId     Int
-  message     String
-  readStatus NotificationStatus @default(Unread)
-
+  title String?
+  type NotificationType
+  message String @db.Text
+  link String?
+  isRead        Boolean @default(false)
   user        User               @relation(fields: [userId], references: [id], onDelete: Cascade) 
 
   createdAt   DateTime     @default(now())
@@ -127,23 +172,67 @@ model Notification {
   @@map("notifications")
 }
 
-enum TaskStatus {
-  ToDo      @map("todo")
-  Doing     @map("doing")
-  Done      @map("done")
-  Suspended @map("suspended")
+model TaskStatus {
+  id              Int         @id  @default(autoincrement())
+  projectId       Int
+  name            String       @db.VarChar(500)
+  color           String       @db.VarChar(500)
+  sortOrder           Int
+
+  project Project @relation(fields:[projectId], references:[id], onDelete:Cascade)
+  tasks Task[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@unique([projectId,name])
+  @@unique([projectId,sortOrder])
+
   @@map("task_status")
 }
 
+enum TeamRole {
+  OWNER    @map("owner")
+  LEAD     @map("lead")
+  MEMBER   @map("member")
+  GUEST    @map("guest")
+}
+
 enum TaskPriority {
-  Low    @map("low")
-  Medium @map("medium")
-  High   @map("high")
+  LOW    @map("low")
+  MEDIUM @map("medium")
+  HIGH   @map("high")
+  URGENT @map("urgent")
+
   @@map("task_priorities")
 }
 
-enum NotificationStatus {
-  Read   @map("read")
-  Unread @map("unread")
-  @@map("notification_status")
+enum ProjectRole {
+  OWNER @map("owner")
+  ADMIN @map("admin")
+  MEMBER @map("member")
+  VIEWER @map("viewer")
 }
+
+enum ProjectStatus {
+  ACTIVE
+  ARCHIVED
+}
+enum NotificationType {
+  TASK_ASSIGNED
+  TASK_UNASSIGNED
+  TASK_CREATED
+  TASK_UPDATED
+  TASK_COMPLETED
+  TASK_DELETED
+  COMMENT_ADDED
+  TEAM_MEMBER_ADDED
+  TEAM_MEMBER_REMOVED
+  PROJECT_MEMBER_ADDED
+  PROJECT_MEMBER_REMOVED
+  STATUS_CHANGED
+  DUE_DATE_CHANGED
+  MENTION
+  SYSTEM
+}
+
+
