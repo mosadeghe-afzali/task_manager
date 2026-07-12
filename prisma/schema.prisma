@@ -195,6 +195,8 @@ enum TeamRole {
   LEAD     @map("lead")
   MEMBER   @map("member")
   GUEST    @map("guest")
+
+  @@map("team_roles")
 }
 
 enum TaskPriority {
@@ -211,11 +213,15 @@ enum ProjectRole {
   ADMIN @map("admin")
   MEMBER @map("member")
   VIEWER @map("viewer")
+
+  @@map("project_roles")
 }
 
 enum ProjectStatus {
   ACTIVE
   ARCHIVED
+
+  @@map("project_statuses")
 }
 enum NotificationType {
   TASK_ASSIGNED
@@ -233,6 +239,8 @@ enum NotificationType {
   DUE_DATE_CHANGED
   MENTION
   SYSTEM
+
+  @@map("notification_types")
 }
 
 
