@@ -5,8 +5,9 @@ const path = require("path");
 const router = require("./src/routes");
 const i18next = require('i18next');
 const middleware = require('i18next-http-middleware');
-const passport = require('passport'); // یا مسیر فایل کانفیگ خودتان: require('./src/helpers/passport')
+const passport = require('passport');
 const cookieParser = require('cookie-parser');
+const errorHandler = require('./src/middlewares/ErrorHandler');
 
 i18next.use(middleware.LanguageDetector).init({
   fallbackLng: 'fa',
@@ -44,6 +45,7 @@ app.use((req, res) => {
     message: "مسیر یا منبع مورد نظر یافت نشد"
   });
 });
+app.use(errorHandler)
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
