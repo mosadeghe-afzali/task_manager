@@ -71,7 +71,7 @@ const store = async (req, res, next) => {
   }
 
   try {
-    const project = projectService.store(req.body);
+    const project = await projectService.store(req.body);
     return res.status(201).json({
       success: true,
       message: "درخواست با موفقیت انجام شد.",
@@ -109,7 +109,7 @@ const update = async (req, res) => {
 
   try {
     projectId = req.params.projectId;
-    project = projectService.update(projectId, req.body);
+    project = await projectService.update(projectId, req.body);
 
     return res.status(200).json({
       success: true,
@@ -127,7 +127,7 @@ const destroy = async (req, res) => {
   projectId = req.params.projectId;
 
   try {
-    projectService.destroy(projectId);
+    await projectService.destroy(projectId);
 
     return res.status(200).json({
       success: true,
