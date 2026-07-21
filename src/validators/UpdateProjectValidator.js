@@ -68,7 +68,7 @@ const updateProjectValidator = [
         field: req.t('attributes.' + path)
       })
     )
-    .isIn(['folder', 'shopping-cart', 'users', 'code']).withMessage((value, { req, path }) =>
+    .isIn(['folder', 'shopping-cart', 'users', 'code', 'finance']).withMessage((value, { req, path }) =>
       req.t('validation.enum', {
         field: req.t('attributes.' + path),
         values: 'folder, shopping-cart, users, code'

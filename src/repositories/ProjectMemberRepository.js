@@ -1,9 +1,8 @@
 const { prisma } = require('../configs/db');
-const { findMany } = require('./TeamRepository');
 
-const ProjectRepository = {
+const ProjectMemberRepository = {
   async create(input) {
-    return await prisma.Project.create({
+    return await prisma.ProjectMember.create({
       data: input
     });
   },
@@ -11,13 +10,18 @@ const ProjectRepository = {
   async find(input) {
     field = input.field;
     value = input.value;
-    return await prisma.Project.findUnique({
+    return await prisma.ProjectMember.findUnique({
       where: { [field]: value }
+    });
+  },
+  async findFirst(input) {
+    return prisma.projectMember.findFirst({
+      where: input
     });
   },
 
   async findById(projectId) {
-    return await prisma.Project.findUniqueOrThrow({
+    return await prisma.ProjectMember.findUniqueOrThrow({
       where: { id: projectId }
     });
   },
@@ -49,8 +53,8 @@ const ProjectRepository = {
     console.log(prismaArgs, 'prisma arguments', countArgs);
 
     const [projects, totalCount] = await Promise.all([
-      prisma.Project.findMany(prismaArgs),
-      prisma.Project.count(countArgs) // شمارش کل بدون اعمال take و skip
+      prisma.ProjectMember.findMany(prismaArgs),
+      prisma.ProjectMember.count(countArgs) // شمارش کل بدون اعمال take و skip
     ]);
 
     return {
@@ -60,7 +64,7 @@ const ProjectRepository = {
   },
 
   async update(projectId, data) {
-    return await prisma.Project.update({
+    return await prisma.ProjectMember.update({
       where: {
         id: parseInt(projectId)
       },
@@ -68,13 +72,13 @@ const ProjectRepository = {
     });
   },
   async delete(projectId) {
-    return await prisma.Project.delete({
+    return await prisma.ProjectMember.delete({
       where: {
         id: parseInt(projectId)
       }
     });
   }
-  
+
 };
 
-module.exports = ProjectRepository;
+module.exports = ProjectMemberRepository;

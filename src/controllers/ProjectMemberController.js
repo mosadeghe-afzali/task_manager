@@ -71,7 +71,22 @@ const store = async (req, res, next) => {
   }
 
   try {
-    const project = await projectService.store(req.body);
+    projectId = req.params.projectId;
+    const userId = req.body.userId;
+    const exists = projectService.findFirstProjectMember({
+      projectId,
+      userId
+    });
+    if (exists) {
+      return res.status(422).json({
+        success: false,
+        message: "کاربر از قبل عضو پروژه است.",
+      });
+    }
+
+    // to do insert project memeber
+
+
     return res.status(201).json({
       success: true,
       message: "درخواست با موفقیت انجام شد.",
