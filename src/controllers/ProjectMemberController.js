@@ -2,6 +2,7 @@ const { validationResult } = require("express-validator");
 const projectService = require("../services/ProjectService");
 const teamService = require("../services/TeamService");
 const { request } = require("express");
+const { selectFields } = require("express-validator/lib/field-selection");
 
 const index = async (req, res, next) => {
   try {
@@ -9,24 +10,28 @@ const index = async (req, res, next) => {
     const limit = parseInt(req.query.limit, 10) || 10;
     const skip = (page - 1) * limit;
 
-    const { projects, totalCount } = await projectService.findMany({
+    const { members, totalCount } = await projectService.getProjectMembers({
       skip,
       limit,
-      selectFields: ["id", "name", "key", "description", "icon", "status", "startDate", "endDate"],
+      where: {
+        projectId: parseInt(req.params.projectId),
+      },
+      orderBy: {
+        joinedAt: "desc",
+      },
     });
 
     return res.status(200).json({
       success: true,
       message: "درخواست با موفقیت انجام شد.",
-      data: projects,
+      data: members,
       meta: {
         total_items: totalCount,
         current_page: page,
         per_page: limit,
-        total_pages: Math.ceil(totalCount / limit)
-      }
+        total_pages: Math.ceil(totalCount / limit),
+      },
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -36,65 +41,14 @@ const index = async (req, res, next) => {
 };
 
 const show = async (req, res, next) => {
-  projectId = parseInt(req.params.projectId);
+  memberId = parseInt(req.params.memberId);
   try {
-    const project = await projectService.findById(projectId)
+    const project = await projectService.findById(projectId);
     return res.status(200).json({
       success: true,
       message: "درخواست با موفقیت انجام شد.",
-      data: project
-    })
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
+      data: project,
     });
-  }
-}
-
-const store = async (req, res, next) => {
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-
-    const formattedErrors = {};
-    errors.array().forEach(err => {
-      if (!formattedErrors[err.path]) {
-        formattedErrors[err.path] = err.msg;
-      }
-    });
-    return res.status(422).json({
-      success: false,
-      message: "درخواست شما با خطا مواجه شد.",
-      errors: formattedErrors
-    });
-  }
-
-  try {
-    projectId = req.params.projectId;
-    const userId = req.body.userId;
-    const exists = projectService.findFirstProjectMember({
-      projectId,
-      userId
-    });
-    if (exists) {
-      return res.status(422).json({
-        success: false,
-        message: "کاربر از قبل عضو پروژه است.",
-      });
-    }
-
-    // to do insert project memeber
-
-
-    return res.status(201).json({
-      success: true,
-      message: "درخواست با موفقیت انجام شد.",
-      data: {
-        project,
-      },
-    });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -103,14 +57,12 @@ const store = async (req, res, next) => {
   }
 };
 
-
-const update = async (req, res) => {
+const store = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-
     const formattedErrors = {};
-    errors.array().forEach(err => {
+    errors.array().forEach((err) => {
       if (!formattedErrors[err.path]) {
         formattedErrors[err.path] = err.msg;
       }
@@ -118,7 +70,40 @@ const update = async (req, res) => {
     return res.status(422).json({
       success: false,
       message: "درخواست شما با خطا مواجه شد.",
-      errors: formattedErrors
+      errors: formattedErrors,
+    });
+  }
+
+  try {
+    projectId = req.params.projectId;
+    const memeber = await projectService.addProjectMember(projectId, req.body);
+
+    return res.status(201).json({
+      success: true,
+      message: "درخواست با موفقیت انجام شد.",
+      data: {
+        memeber,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const update = async (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    const formattedErrors = {};
+    errors.array().forEach((err) => {
+      if (!formattedErrors[err.path]) {
+        formattedErrors[err.path] = err.msg;
+      }
+    });
+    return res.status(422).json({
+      success: false,
+      message: "درخواست شما با خطا مواجه شد.",
+      errors: formattedErrors,
     });
   }
 
@@ -136,7 +121,7 @@ const update = async (req, res) => {
       message: error.message,
     });
   }
-}
+};
 
 const destroy = async (req, res) => {
   projectId = req.params.projectId;
@@ -154,12 +139,12 @@ const destroy = async (req, res) => {
       message: error.message,
     });
   }
-}
+};
 
 module.exports = {
   store,
   index,
   show,
   update,
-  destroy
+  destroy,
 };

@@ -1,9 +1,16 @@
-const { prisma } = require('../configs/db');
+const { prisma } = require("../configs/db");
 
 const ProjectMemberRepository = {
   async create(input) {
     return await prisma.ProjectMember.create({
-      data: input
+      data: input,
+      select: {
+        id: true,
+        projectId: true,
+        userId: true,
+        role: true,
+        createdAt: true,
+      },
     });
   },
 
@@ -11,23 +18,41 @@ const ProjectMemberRepository = {
     field = input.field;
     value = input.value;
     return await prisma.ProjectMember.findUnique({
-      where: { [field]: value }
+      where: { [field]: value },
     });
   },
+  
   async findFirst(input) {
     return prisma.projectMember.findFirst({
-      where: input
+      where: input,
     });
   },
 
   async findById(projectId) {
     return await prisma.ProjectMember.findUniqueOrThrow({
-      where: { id: projectId }
+      where: { id: projectId },
     });
   },
 
   async findMany(options = {}) {
-    const prismaArgs = {};
+    const prismaArgs = {
+      select: {
+        id: true,
+        userId: true,
+        projectId: true,
+        role: true,
+        joinedAt: true,
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            avatar: true,
+          },
+        },
+      },
+    };
+
     const countArgs = {};
 
     if (options?.skip) {
@@ -43,42 +68,36 @@ const ProjectMemberRepository = {
       countArgs.where = options.where;
     }
 
-    if (options?.selectFields && options.selectFields.length > 0) {
-      prismaArgs.select = {};
-      options.selectFields.forEach(field => {
-        prismaArgs.select[field] = true;
-      });
+    if (options?.orderBy) {
+      prismaArgs.orderBy = options.orderBy;
     }
 
-    console.log(prismaArgs, 'prisma arguments', countArgs);
-
-    const [projects, totalCount] = await Promise.all([
+    const [members, totalCount] = await Promise.all([
       prisma.ProjectMember.findMany(prismaArgs),
-      prisma.ProjectMember.count(countArgs) // شمارش کل بدون اعمال take و skip
+      prisma.ProjectMember.count(countArgs),
     ]);
 
     return {
-      projects,
-      totalCount
+      members,
+      totalCount,
     };
   },
 
   async update(projectId, data) {
     return await prisma.ProjectMember.update({
       where: {
-        id: parseInt(projectId)
+        id: parseInt(projectId),
       },
-      data: data
+      data: data,
     });
   },
   async delete(projectId) {
     return await prisma.ProjectMember.delete({
       where: {
-        id: parseInt(projectId)
-      }
+        id: parseInt(projectId),
+      },
     });
-  }
-
+  },
 };
 
 module.exports = ProjectMemberRepository;

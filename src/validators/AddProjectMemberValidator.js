@@ -1,10 +1,11 @@
-const { body } = require('express-validator');
+const { param,body } = require('express-validator');
 const { ProjectRole } = require("@prisma/client");
 const projectRepository = require('../repositories/ProjectRepository');
 const userRepository = require('../repositories/UserRepository');
+console.log(ProjectRole)
 
 const AddProjectMemberValidator = [
-  body('projectId')
+  param('projectId')
   .notEmpty().withMessage((value, { req, path }) =>
     req.t('validation.required', {
       field: req.t('attributes.' + path)
