@@ -7,7 +7,7 @@ const projectMemberController = require('../controllers/ProjectMemberController'
 
 const createProjectValidator = require('../validators/CreateProjectValidator');
 const updateProjectValidator = require('../validators/UpdateProjectValidator');
-const addProjectMemberValidator = require('../validators/AddProjectMemberValidator'); 
+const addProjectMemberValidator = require('../validators/AddProjectMemberValidator');
 
 const protect = passport.authenticate('jwt', { session: false });
 
@@ -26,8 +26,16 @@ router.route('/:projectId')
 router.route('/:projectId/members')
     .get(projectMemberController.index)
     .post(addProjectMemberValidator, projectMemberController.store);
-
+router.get(
+    '/:projectId/members/search',
+    projectMemberController.searchMembersToInvite
+);
 router.route('/:projectId/members/:memberId')
     .delete(projectMemberController.destroy);
+
+router.get(
+    '/projects/:projectId/members/search',
+    projectMemberController.searchMembersToInvite
+);
 
 module.exports = router;

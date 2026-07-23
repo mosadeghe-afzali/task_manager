@@ -1,4 +1,4 @@
-const { validationResult } = require("express-validator");
+const { validationResult, query } = require("express-validator");
 const projectService = require("../services/ProjectService");
 const teamService = require("../services/TeamService");
 const { request } = require("express");
@@ -9,16 +9,11 @@ const index = async (req, res, next) => {
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 10;
     const skip = (page - 1) * limit;
-
+    const projectId = req.params.projectId;
     const { members, totalCount } = await projectService.getProjectMembers({
       skip,
       limit,
-      where: {
-        projectId: parseInt(req.params.projectId),
-      },
-      orderBy: {
-        joinedAt: "desc",
-      },
+      projectId
     });
 
     return res.status(200).json({
@@ -33,10 +28,7 @@ const index = async (req, res, next) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    next(error)
   }
 };
 
@@ -76,14 +68,12 @@ const store = async (req, res, next) => {
 
   try {
     projectId = req.params.projectId;
-    const memeber = await projectService.addProjectMember(projectId, req.body);
+    await projectService.addProjectMember(projectId, req.body);
 
     return res.status(201).json({
       success: true,
       message: "درخواست با موفقیت انجام شد.",
-      data: {
-        memeber,
-      },
+      data: {},
     });
   } catch (error) {
     next(error);
@@ -123,28 +113,41 @@ const update = async (req, res) => {
   }
 };
 
-const destroy = async (req, res) => {
-  projectId = req.params.projectId;
+const destroy = async (req, res, next) => {
+  memberId = req.params.memberId;
 
   try {
-    await projectService.destroy(projectId);
+    await projectService.deleteProjectMemeber(memberId);
 
     return res.status(200).json({
       success: true,
       message: "درخواست با موفقیت انجام شد.",
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    next(error)
   }
 };
 
+const searchMembersToInvite = async (req, res, next) => {
+  try {
+    const projectId = parseInt(req.params.projectId);
+    const q = req.query.q;
+
+    const users = await projectService.searchUsersForProject(projectId, q);
+
+    return res.status(200).json({
+      success: true,
+      data: users,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 module.exports = {
   store,
   index,
   show,
   update,
   destroy,
+  searchMembersToInvite,
 };

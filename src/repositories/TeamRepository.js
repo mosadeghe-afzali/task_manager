@@ -15,8 +15,38 @@ const TeamRepository = {
     });
   },
 
-  async findMany() {
-    return await prisma.Team.findMany();
+  async findMany(options = {}) {
+    const prismaArgs = {};
+    const countArgs = {};
+
+    if (options?.skip) {
+      prismaArgs.skip = options.skip;
+    }
+
+    if (options?.limit) {
+      prismaArgs.take = options.limit;
+    }
+
+    if (options?.where) {
+      prismaArgs.where = options.where;
+      countArgs.where = options.where;
+    }
+
+    if (options?.select) {
+      prismaArgs.select = options.select;
+    }
+
+    console.log(prismaArgs, 'prisma arguments', countArgs);
+
+    const [teams, totalCount] = await Promise.all([
+      prisma.Team.findMany(prismaArgs),
+      prisma.Team.count(countArgs) // شمارش کل بدون اعمال take و skip
+    ]);
+
+    return {
+      teams,
+      totalCount
+    };
   },
 };
 

@@ -2,14 +2,12 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 
-const TeamController = require('../controllers/TeamController');
-const CreateTeamValidator = require('../validators/CreateTeamValidator');
+const userController = require('../controllers/UserController');
 const protect = passport.authenticate('jwt', { session: false });
 
 router.use(protect);
 
 router.route('/')
-  .get(TeamController.index)
-  .post(CreateTeamValidator, TeamController.store);
+  .get(userController.index)
 
 module.exports = router;

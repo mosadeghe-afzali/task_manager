@@ -2,38 +2,63 @@ const { validationResult } = require("express-validator");
 const teamService = require('../services/TeamService');
 const userService = require('../services/UserService')
 
-const create = async (req, res) => {
-const users = await userService.findMany();
+const index = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const skip = (page - 1) * limit;
+    const { teams, totalCount } = await teamService.index(skip, limit);
 
-  console.log(users)
-  res.render('teams/create.ejs', {
-    title: "ایجاد تیم",
-    errors: [],
-    users: users
-
-  });
+    return res.status(200).json({
+      success: true,
+      message: "درخواست با موفقیت انجام شد.",
+      data: teams,
+      meta: {
+        total_items: totalCount,
+        current_page: page,
+        per_page: limit,
+        total_pages: Math.ceil(totalCount / limit),
+      },
+    });
+  } catch (error) {
+    next(error)
+  }
 }
 
 const store = async (req, res, next) => {
-  const users = await userService.findMany();
-  console.log(req.body)
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return res.render('teams/create.ejs', {
-      title: "ایجاد تیم",
-      errors: errors.array(),
-      request: req.body,
-      users: users
-    })
+
+    const formattedErrors = {};
+    errors.array().forEach(err => {
+      if (!formattedErrors[err.path]) {
+        formattedErrors[err.path] = err.msg;
+      }
+    });
+    return res.status(422).json({
+      success: false,
+      message: "درخواست شما با خطا مواجه شد.",
+      errors: formattedErrors
+    });
   }
 
-  const team = await teamService.store(req.body)
+  try {
+    const team = await teamService.store(req.body);
+    return res.status(201).json({
+      success: true,
+      message: "درخواست با موفقیت انجام شد.",
+      data: {
+        team,
+      },
+    });
 
-  res.redirect('/');
+  } catch (error) {
+    return next(error)
+  }
 }
 
 module.exports = {
-  create,
+  index,
   store
 }

@@ -32,7 +32,7 @@ const register = async (req, res, next) => {
       success: true,
       message: "ثبت‌نام با موفقیت انجام شد.",
       data: {
-        token: `Bearer ${token}`,
+        token: token,
         user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName }
       }
     });
@@ -62,7 +62,7 @@ const login = async (req, res) => {
       success: true,
       message: "درخواست با موفقیت انجام شد.",
       data: {
-        token: `Bearer ${token}`,
+        token: token,
         user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName }
       }
     });

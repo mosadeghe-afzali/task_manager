@@ -18,10 +18,13 @@ const store = async (input) => {
     return team;
   });
 };
-const findMany = async () => {
-  return await teamRepository.findMany();
+const index = async (skip, limit) => {
+  return await teamRepository.findMany({
+    skip,
+    limit
+  });
 };
 module.exports = {
   store,
-  findMany
+  index
 };

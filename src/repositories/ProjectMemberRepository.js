@@ -14,6 +14,13 @@ const ProjectMemberRepository = {
     });
   },
 
+  async createMany(data) {
+    return await prisma.projectMember.createMany({
+      data,
+      skipDuplicates: true,
+    });
+  },
+
   async find(input) {
     field = input.field;
     value = input.value;
@@ -21,7 +28,7 @@ const ProjectMemberRepository = {
       where: { [field]: value },
     });
   },
-  
+
   async findFirst(input) {
     return prisma.projectMember.findFirst({
       where: input,
@@ -35,24 +42,10 @@ const ProjectMemberRepository = {
   },
 
   async findMany(options = {}) {
-    const prismaArgs = {
-      select: {
-        id: true,
-        userId: true,
-        projectId: true,
-        role: true,
-        joinedAt: true,
-        user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            avatar: true,
-          },
-        },
-      },
-    };
-
+    const prismaArgs = {};
+    if (options?.select) {
+      prismaArgs.select = options.select;
+    }
     const countArgs = {};
 
     if (options?.skip) {
@@ -71,7 +64,6 @@ const ProjectMemberRepository = {
     if (options?.orderBy) {
       prismaArgs.orderBy = options.orderBy;
     }
-
     const [members, totalCount] = await Promise.all([
       prisma.ProjectMember.findMany(prismaArgs),
       prisma.ProjectMember.count(countArgs),
@@ -83,18 +75,11 @@ const ProjectMemberRepository = {
     };
   },
 
-  async update(projectId, data) {
-    return await prisma.ProjectMember.update({
-      where: {
-        id: parseInt(projectId),
-      },
-      data: data,
-    });
-  },
-  async delete(projectId) {
+
+  async delete(memberId) {
     return await prisma.ProjectMember.delete({
       where: {
-        id: parseInt(projectId),
+        id: parseInt(memberId),
       },
     });
   },
