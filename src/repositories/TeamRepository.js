@@ -1,9 +1,13 @@
 const { prisma } = require("../configs/db");
 
 const TeamRepository = {
-  async create(tx, input) {
-    return await tx.Team.create({
+  async create(input) {
+    return await prisma.Team.create({
       data: input,
+      select: {
+        id: true,
+        name: true,
+      },
     });
   },
 
@@ -12,6 +16,12 @@ const TeamRepository = {
     value = input.value;
     return await prisma.Team.findUnique({
       where: { [field]: value },
+    });
+  },
+
+  async findById(teamId) {
+    return await prisma.Team.findUniqueOrThrow({
+      where: { id: teamId },
     });
   },
 
@@ -45,8 +55,20 @@ const TeamRepository = {
 
     return {
       teams,
-      totalCount
+      totalCount,
     };
+  },
+
+  async search(input) {
+    return await prisma.Team.findFirst(input);
+  },
+
+  async delete(teamId) {
+    return await prisma.Team.delete({
+      where: {
+        id: parseInt(teamId),
+      },
+    });
   },
 };
 

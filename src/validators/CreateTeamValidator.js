@@ -1,9 +1,39 @@
-const { body } = require("express-validator");
-const userRepository = require("../repositories/UserRepository");
-const UserRepository = require("../repositories/UserRepository");
+const { body, param } = require("express-validator");
 const TeamRepository = require("../repositories/TeamRepository");
-console.log(body)
+const projectRepository = require("../repositories/ProjectRepository");
+
+console.log(body);
 const CreateTeamValidator = [
+  param("projectId")
+    .notEmpty()
+    .withMessage((value, { req, path }) =>
+      req.t("validation.required", {
+        field: req.t("attributes." + path),
+      }),
+    )
+    .isInt({ min: 1 })
+    .withMessage((value, { req, path }) =>
+      req.t("validation.integer", {
+        field: req.t("attributes." + path),
+      }),
+    )
+    .toInt()
+    .custom(async (value, { req, path }) => {
+      const project = await projectRepository.find({
+        field: "id",
+        value,
+      });
+
+      if (!project) {
+        throw new Error(
+          req.t("validation.exists", {
+            field: req.t("attributes." + path),
+          }),
+        );
+      }
+
+      return true;
+    }),
   body("name")
     .notEmpty()
     .withMessage((value, { req, path }) =>
@@ -25,15 +55,35 @@ const CreateTeamValidator = [
         field: req.t("attributes." + path),
       }),
     )
+    .custom(async (value, { req, path }) => {
+      const projectId = req.params.projectId;
+      const existingTeam = await TeamRepository.search({
+        where: {
+          projectId: Number(projectId),
+          name: value,
+        },
+      });
+      console.log(existingTeam, value)
+      if (existingTeam) {
+        throw new Error(
+          req.t("validation.unique", {
+            field: req.t("attributes." + path),
+          }),
+        );
+      }
+      return true;
+    })
+
     .trim(),
 
-  body("slug")
-    .isLength({ min: 2, max: 250 })
+  body("description")
+    .optional({ nullable: true, checkFalsy: true })
+    .isLength({ min: 5, max: 6000 })
     .withMessage((value, { req, path }) =>
       req.t("validation.length", {
         field: req.t("attributes." + path),
-        min: 2,
-        max: 250,
+        min: 5,
+        max: 6000,
       }),
     )
     .isString()
@@ -42,39 +92,7 @@ const CreateTeamValidator = [
         field: req.t("attributes." + path),
       }),
     )
-    .custom(async (value, { req, path }) => {
-
-      team = TeamRepository.find({ field: 'slug', value: value });
-      if (team) {
-        throw new Error(
-          req.t("validation.unique", { field: req.t("attributes." + path) }),
-        );
-      }
-      return true;
-    })
     .trim(),
-  body("userIds")
-    .notEmpty()
-    .withMessage((value, { req, path }) =>
-      req.t("validation.required", { field: req.t("attributes." + path) }),
-    )
-    .isArray()
-    .withMessage((value, { req, path }) =>
-      req.t("validation.array", { field: req.t("attributes." + path) }),
-    )
-    .custom(async (userIdsArray, { req, path }) => {
-      userIdsArray.map((id) => {
-        const userId = parseInt(id);
-        const user = UserRepository.find({ field: "id", value: userId });
-        if (!user) {
-          throw new Error(
-            req.t("validation.exists", { field: req.t("attributes." + path) }),
-          );
-        }
-      });
-
-      return true;
-    }),
 ];
 
 module.exports = CreateTeamValidator;

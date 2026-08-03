@@ -1,6 +1,6 @@
 const { validationResult } = require("express-validator");
-const teamService = require('../services/TeamService');
-const userService = require('../services/UserService')
+const teamService = require("../services/TeamService");
+const userService = require("../services/UserService");
 
 const index = async (req, res, next) => {
   try {
@@ -21,17 +21,31 @@ const index = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
-
+};
+const show = async (req, res, next) => {
+  teamId = parseInt(req.params.teamId);
+  try {
+    const team = await teamService.findById(teamId);
+    return res.status(200).json({
+      success: true,
+      message: "درخواست با موفقیت انجام شد.",
+      data: team,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 const store = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-
     const formattedErrors = {};
-    errors.array().forEach(err => {
+    errors.array().forEach((err) => {
       if (!formattedErrors[err.path]) {
         formattedErrors[err.path] = err.msg;
       }
@@ -39,12 +53,13 @@ const store = async (req, res, next) => {
     return res.status(422).json({
       success: false,
       message: "درخواست شما با خطا مواجه شد.",
-      errors: formattedErrors
+      errors: formattedErrors,
     });
   }
-
   try {
-    const team = await teamService.store(req.body);
+    const input = req.body;
+    input["projectId"] = req.params.projectId;
+    const team = await teamService.store(input);
     return res.status(201).json({
       success: true,
       message: "درخواست با موفقیت انجام شد.",
@@ -52,13 +67,35 @@ const store = async (req, res, next) => {
         team,
       },
     });
-
   } catch (error) {
-    return next(error)
+    next(error);
   }
-}
+};
+
+const update = async (req, res) => {};
+
+const destroy = async (req, res) => {
+  teamId = req.params.teamId;
+
+  try {
+    await teamService.destroy(teamId);
+
+    return res.status(200).json({
+      success: true,
+      message: "درخواست با موفقیت انجام شد.",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 module.exports = {
   index,
-  store
-}
+  store,
+  show,
+  update,
+  destroy,
+};
