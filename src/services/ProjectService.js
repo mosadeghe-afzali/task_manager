@@ -32,7 +32,7 @@ const findFirstProjectMember = async (input) => {
 const addProjectMember = async (projectId, input) => {
   const { userIds, role } = input;
 
-  const existingMembers = projectMemberRepository.findMany(
+  const existingMembers = await projectMemberRepository.findMany(
     {
       where: {
         projectId: projectId,
@@ -41,7 +41,7 @@ const addProjectMember = async (projectId, input) => {
     }
   )
 
-  if (existingMembers.length > 0) {
+  if (existingMembers.members.length > 0) {
     throw new ApiError("کاربر عضو پروژه است.", 422);
   }
 
@@ -55,6 +55,35 @@ const addProjectMember = async (projectId, input) => {
 };
 
 const getProjectMembers = async (options) => {
+  const where = {
+    projectId: Number(options.projectId),
+  };
+
+  if (options.search?.trim()) {
+    where.user = {
+      OR: [
+        {
+          firstName: {
+            contains: options.search.trim(),
+            mode: "insensitive",
+          },
+        },
+        {
+          lastName: {
+            contains: options.search.trim(),
+            mode: "insensitive",
+          },
+        },
+        {
+          email: {
+            contains: options.search.trim(),
+            mode: "insensitive",
+          },
+        },
+      ],
+    };
+  }
+
   return await ProjectMemberRepository.findMany({
     skip: options.skip,
     limit: options.limit,
@@ -73,9 +102,7 @@ const getProjectMembers = async (options) => {
         },
       },
     },
-    where: {
-      projectId: parseInt(options.projectId),
-    },
+    where: where,
     orderBy: {
       joinedAt: "desc",
     },
@@ -112,6 +139,61 @@ const searchUsersForProject = async (projectId, query) => {
   );
 };
 
+const getProjectMemberForTeam = async (options) => {
+  const where = {
+    projectId: Number(options.projectId),
+    userId: {
+      notIn: options.excludeUserIds,
+    },
+  };
+
+  if (options.query?.trim()) {
+    where.user = {
+      OR: [
+        {
+          firstName: {
+            contains: options.query.trim(),
+            mode: "insensitive",
+          },
+        },
+        {
+          lastName: {
+            contains: options.query.trim(),
+            mode: "insensitive",
+          },
+        },
+        {
+          email: {
+            contains: options.query.trim(),
+            mode: "insensitive",
+          },
+        },
+      ],
+    };
+  }
+
+  return await ProjectMemberRepository.findMany({
+    select: {
+      id: true,
+      userId: true,
+      projectId: true,
+      role: true,
+      user: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+        },
+      },
+    },
+    where: where,
+    orderBy: {
+      joinedAt: "desc",
+    },
+  });
+}
+
 module.exports = {
   store,
   findMany,
@@ -122,5 +204,6 @@ module.exports = {
   getProjectMembers,
   findProjectMember,
   deleteProjectMemeber,
-  searchUsersForProject
+  searchUsersForProject,
+  getProjectMemberForTeam
 };

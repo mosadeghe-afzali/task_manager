@@ -7,7 +7,8 @@ const index = async (req, res, next) => {
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 10;
     const skip = (page - 1) * limit;
-    const { teams, totalCount } = await teamService.index(skip, limit);
+    const projectId = req.params.projectId;
+    const { teams, totalCount } = await teamService.index(projectId, skip, limit);
 
     return res.status(200).json({
       success: true,
@@ -72,7 +73,40 @@ const store = async (req, res, next) => {
   }
 };
 
-const update = async (req, res) => {};
+const update = async (req, res) => {
+
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+
+    const formattedErrors = {};
+    errors.array().forEach(err => {
+      if (!formattedErrors[err.path]) {
+        formattedErrors[err.path] = err.msg;
+      }
+    });
+    return res.status(422).json({
+      success: false,
+      message: "درخواست شما با خطا مواجه شد.",
+      errors: formattedErrors
+    });
+  }
+
+  try {
+    teamId = req.params.teamId;
+    team = await teamService.update(teamId, req.body);
+
+    return res.status(200).json({
+      success: true,
+      message: "درخواست با موفقیت انجام شد.",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 const destroy = async (req, res) => {
   teamId = req.params.teamId;
@@ -92,10 +126,28 @@ const destroy = async (req, res) => {
   }
 };
 
+const searchMembersToInvite = async (req, res, next) => {
+  try {
+    const teamId = parseInt(req.params.teamId);
+    const projectId = parseInt(req.params.projectId);
+    const q = req.query.q;
+
+    const users = await teamService.searchUsersForTeam(projectId, teamId, q);
+
+    return res.status(200).json({
+      success: true,
+      data: users,
+    });
+} catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   index,
   store,
   show,
   update,
   destroy,
+  searchMembersToInvite
 };

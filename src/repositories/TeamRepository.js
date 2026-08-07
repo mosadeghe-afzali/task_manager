@@ -62,14 +62,22 @@ const TeamRepository = {
   async search(input) {
     return await prisma.Team.findFirst(input);
   },
-
-  async delete(teamId) {
-    return await prisma.Team.delete({
+  async update(teamId, data) {
+    return await prisma.Team.update({
       where: {
-        id: parseInt(teamId),
+        id: parseInt(teamId)
       },
+      data: data
     });
   },
+
+  async delete (teamId) {
+  return await prisma.Team.delete({
+    where: {
+      id: parseInt(teamId),
+    },
+  });
+},
 };
 
 module.exports = TeamRepository;

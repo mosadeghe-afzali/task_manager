@@ -53,4 +53,9 @@ router
   .route("/:projectId/teams")
   .get(TeamController.index)
   .post(CreateTeamValidator, TeamController.store);
+
+router.get(
+  "/:projectId/teams/:teamId/members/search",
+  TeamController.searchMembersToInvite,
+);
 module.exports = router;

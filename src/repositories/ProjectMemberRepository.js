@@ -15,7 +15,7 @@ const ProjectMemberRepository = {
   },
 
   async createMany(data) {
-    return await prisma.projectMember.createMany({
+    return await prisma.ProjectMember.createMany({
       data,
       skipDuplicates: true,
     });
@@ -30,7 +30,7 @@ const ProjectMemberRepository = {
   },
 
   async findFirst(input) {
-    return prisma.projectMember.findFirst({
+    return prisma.ProjectMember.findFirst({
       where: input,
     });
   },
