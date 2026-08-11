@@ -11,8 +11,10 @@
     "exists": "{{ field }} یافت نشد.",
     "array": "{{ field }} باید آرایه باشد.",
     "date": "{{field}}  باید تاریخ با فرمت معتبر باشد.",
-    "after_date": "{{field}}  باید بزرگتر از فیلد {{ after }}  باشد"
+    "after_date": "{{field}}  باید بزرگتر از فیلد {{ after }}  باشد",
+    "integer": "{{ field }} باید مقدار عددی باشد."
   },
+
   "attributes": {
     "name": "نام",
     "email": "ایمیل",
@@ -30,6 +32,12 @@
     "userId": "شناسه کاربر",
     "projectId": "شناسه پروژه",
     "role": "نقش",
-    "userIds": "شاسه کاربران"
+    "userIds": "شاسه کاربران",
+    "estimatedHours": "تخمین زمان",
+    "dueDate": "تاریخ اتمام",
+    "priority": "اولویت",
+    "title": "عنوان",
+    "assigneeId": "شناسه مسئول تیکت",
+    "requesterId": "شناسهدرخواست دهنده"
   }
 }
