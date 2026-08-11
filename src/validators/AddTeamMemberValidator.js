@@ -2,7 +2,6 @@ const { param, body } = require('express-validator');
 const { TeamRole } = require("@prisma/client");
 const teamRepository = require('../repositories/TeamRepository');
 const userRepository = require('../repositories/UserRepository');
-console.log(TeamRole)
 
 const AddTeamMemberValidator = [
   param('teamId')
