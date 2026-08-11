@@ -12,6 +12,10 @@ const addProjectMemberValidator = require("../validators/AddProjectMemberValidat
 const TeamController = require("../controllers/TeamController");
 const CreateTeamValidator = require("../validators/CreateTeamValidator");
 
+
+const taskStatusController = require("../controllers/TaskStatusController");
+const createTaskStatusValidator = require("../validators/CreateTaskStatusValidator");
+
 const protect = passport.authenticate("jwt", { session: false });
 
 router.use(protect);
@@ -58,4 +62,16 @@ router.get(
   "/:projectId/teams/:teamId/members/search",
   TeamController.searchMembersToInvite,
 );
+
+router
+  .route("/:projectId/statuses")
+  .get(taskStatusController.index)
+  .post(createTaskStatusValidator, taskStatusController.store);
+
+router
+  .route("/:projectId/statuses/:statusId")
+  .get(taskStatusController.show)
+  .put(taskStatusController.update)
+  .delete(taskStatusController.destroy)
+
 module.exports = router;
