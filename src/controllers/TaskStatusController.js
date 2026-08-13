@@ -8,7 +8,7 @@ const index = async (req, res, next) => {
     const limit = parseInt(req.query.limit, 10) || 10;
     const skip = (page - 1) * limit;
     const projectId = req.params.projectId;
-    const { statuses, totalCount } = await taskStatusService.getProjectMembers({
+    const { statuses, totalCount } = await taskStatusService.findMany({
       skip,
       limit,
       projectId
@@ -31,7 +31,7 @@ const index = async (req, res, next) => {
 };
 
 const show = async (req, res, next) => {
-  statsId = parseInt(req.params.statsId);
+  statusId = parseInt(req.params.statusId);
   try {
     const status = await taskStatusService.findById(statusId);
     return res.status(200).json({
@@ -65,13 +65,14 @@ const store = async (req, res, next) => {
   }
 
   try {
-    projectId = req.params.projectId;
-    await taskStatusService.store(projectId, req.body);
+    const input = req.body;
+    input.projectId = req.params.projectId;
+    const status = await taskStatusService.store(input);
 
     return res.status(201).json({
       success: true,
       message: "درخواست با موفقیت انجام شد.",
-      data: {},
+      data: status,
     });
   } catch (error) {
     next(error);

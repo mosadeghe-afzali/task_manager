@@ -1,6 +1,7 @@
 const { body, param } = require("express-validator");
 const projectRepository = require("../repositories/ProjectRepository");
-
+const taskStatusRepository = require('../repositories/TaskStatusRepository');
+const { name } = require("ejs");
 console.log(body);
 const CreateTaskStatusValidator = [
   param("projectId")
@@ -56,14 +57,15 @@ const CreateTaskStatusValidator = [
     )
     .custom(async (value, { req, path }) => {
       const projectId = req.params.projectId;
-      const existingTeam = await TeamRepository.search({
-        where: {
-          projectId: Number(projectId),
-          name: value,
-        },
+      const existingStatus = await taskStatusRepository.find({
+        field: 'projectId_name',
+        value: {
+          projectId: projectId,
+          name: value
+        }
       });
-      console.log(existingTeam, value);
-      if (existingTeam) {
+      console.log(existingStatus, value);
+      if (existingStatus) {
         throw new Error(
           req.t("validation.unique", {
             field: req.t("attributes." + path),
@@ -75,7 +77,12 @@ const CreateTaskStatusValidator = [
 
     .trim(),
   body("color")
-    .optional({ nullable: true, checkFalsy: true })
+    .notEmpty()
+    .withMessage((value, { req, path }) =>
+      req.t("validation.required", {
+        field: req.t("attributes." + path),
+      }),
+    )
     .isString()
     .withMessage((value, { req, path }) =>
       req.t("validation.string", {
@@ -92,7 +99,12 @@ const CreateTaskStatusValidator = [
     .trim(),
 
   body("sortOrder")
-    .optional({ nullable: true, checkFalsy: true })
+    .notEmpty()
+    .withMessage((value, { req, path }) =>
+      req.t("validation.required", {
+        field: req.t("attributes." + path),
+      }),
+    )
     .isInt()
     .withMessage((value, { req, path }) =>
       req.t("validation.integer", {

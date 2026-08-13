@@ -38,6 +38,8 @@
     "priority": "اولویت",
     "title": "عنوان",
     "assigneeId": "شناسه مسئول تیکت",
-    "requesterId": "شناسهدرخواست دهنده"
+    "requesterId": "شناسهدرخواست دهنده",
+    "color": "رنگ",
+    "sortOrder": "ترتیب نمایش"
   }
 }

@@ -2,22 +2,22 @@ const taskStatusRepository = require("../repositories/TaskStatusRepository");
 const ApiError = require("../helpers/ApiError");
 
 const store = async (input) => {
-  
+  return await taskStatusRepository.create(input);
 };
 const findMany = async (options) => {
   return await taskStatusRepository.findMany(options);
 };
 
-const findById = async (taskId) => {
-  return await taskStatusRepository.findById(taskId);
+const findById = async (statusId) => {
+  return await taskStatusRepository.findById(statusId);
 };
 
-const update = async (taskId, data) => {
-  return await taskStatusRepository.update(taskId, data);
+const update = async (statusId, data) => {
+  return await taskStatusRepository.update(statusId, data);
 };
 
-const destroy = async (taskId) => {
-  return await taskStatusRepository.delete(taskId);
+const destroy = async (statusId) => {
+  return await taskStatusRepository.delete(statusId);
 };
 
 module.exports = {

@@ -1,9 +1,16 @@
+const { name } = require('ejs');
 const { prisma } = require('../configs/db');
 
 const TaskStatusRepository = {
   async create(input) {
     return await prisma.TaskStatus.create({
-      data: input
+      data: input,
+      select: {
+        id: true,
+        name: true,
+        color: true,
+        sortOrder: true
+      }
     });
   },
 
@@ -15,9 +22,16 @@ const TaskStatusRepository = {
     });
   },
 
-  async findById(projectId) {
+  async findById(statusId) {
     return await prisma.TaskStatus.findUniqueOrThrow({
-      where: { id: projectId }
+      where: { id: statusId },
+      select: {
+        id: true,
+        projectId: true,
+        name: true,
+        color: true,
+        sortOrder: true
+      }
     });
   },
 
@@ -44,32 +58,29 @@ const TaskStatusRepository = {
         prismaArgs.select[field] = true;
       });
     }
-
-    console.log(prismaArgs, 'prisma arguments', countArgs);
-
-    const [projects, totalCount] = await Promise.all([
+    const [statuses, totalCount] = await Promise.all([
       prisma.TaskStatus.findMany(prismaArgs),
       prisma.TaskStatus.count(countArgs) // شمارش کل بدون اعمال take و skip
     ]);
 
     return {
-      projects,
+      statuses,
       totalCount
     };
   },
 
-  async update(projectId, data) {
+  async update(statusId, data) {
     return await prisma.TaskStatus.update({
       where: {
-        id: parseInt(projectId)
+        id: parseInt(statusId)
       },
       data: data
     });
   },
-  async delete(projectId) {
+  async delete(statusId) {
     return await prisma.TaskStatus.delete({
       where: {
-        id: parseInt(projectId)
+        id: parseInt(statusId)
       }
     });
   }
