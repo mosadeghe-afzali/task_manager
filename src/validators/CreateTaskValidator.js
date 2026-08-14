@@ -2,6 +2,10 @@ const { body } = require("express-validator");
 const TeamRepository = require("../repositories/TeamRepository");
 const { TaskPriority } = require("@prisma/client");
 
+const projectRepository = require("../repositories/ProjectRepository");
+const projectMemberRepository = require("../repositories/ProjectMemberRepository");
+const taskStatusRepository = require('../repositories/TaskStatusRepository');
+
 const CreateTaskValidator = [
   body("projectId")
     .notEmpty()
@@ -103,29 +107,58 @@ const CreateTaskValidator = [
       req.t('validation.integer', {
         field: req.t('attributes.' + path)
       })
-  ),
+    )
+    .custom(async (value, { req, path }) => {
+      const projectMember = projectMemberRepository.findFirst({
+        userId: value,
+        projectId: req.body.projectId
+      });
+
+      if (!projectMember) {
+        throw new Error(
+          req.t('validation.exists', {
+            field: req.t('attributes.' + path)
+          })
+        )
+      }
+    }),
   body('requesterId')
     .optional({ nullable: true, checkFalsy: true })
     .isInt({ min: 1 }).withMessage((value, { req, path }) =>
       req.t('validation.integer', {
         field: req.t('attributes.' + path)
       })
-  ),
-    body('proority')
-      .default('low')
-      .notEmpty().withMessage((value, { req, path }) =>
-        req.t('validation.required', { field: req.t('attributes.' + path) })
-      )
-      .isString().withMessage((value, { req, path }) =>
-        req.t('validation.string', { field: req.t('attributes.' + path) })
-      )
-      .isIn(Object.values(TaskPriority)).withMessage((value, { req, path }) =>
-        req.t('validation.enum', {
-          field: req.t('attributes.' + path),
-          values: Object.values(TaskPriority).join(', ')
-        })
-      )
-      .trim(),
+    )
+    // .custom(async (value, { req, path }) => {
+    //   const projectMember = projectMemberRepository.findFirst({
+    //     userId: value,
+    //     projectId: req.body.projectId
+    //   });
+
+    //   if (!projectMember) {
+    //     throw new Error(
+    //       req.t('validation.exists', {
+    //         field: req.t('attributes.' + path)
+    //       })
+    //     )
+    //   }
+    // })
+    ,
+  body('priority')
+    .default('LOW')
+    .notEmpty().withMessage((value, { req, path }) =>
+      req.t('validation.required', { field: req.t('attributes.' + path) })
+    )
+    .isString().withMessage((value, { req, path }) =>
+      req.t('validation.string', { field: req.t('attributes.' + path) })
+    )
+    .isIn(Object.values(TaskPriority)).withMessage((value, { req, path }) =>
+      req.t('validation.enum', {
+        field: req.t('attributes.' + path),
+        values: Object.values(TaskPriority).join(', ')
+      })
+    )
+    .trim(),
 
   // --- Start Date ---
   body("startDate")
@@ -149,7 +182,7 @@ const CreateTaskValidator = [
       }
       return true;
     })
-  .trim(),
+    .trim(),
 
   // --- due Date ---
   body("dueDate")
@@ -175,7 +208,35 @@ const CreateTaskValidator = [
 
   // --- Status ---
   body("statusId")
-    .trim(),
+      .notEmpty()
+    .withMessage((value, { req, path }) =>
+      req.t("validation.required", {
+        field: req.t("attributes." + path),
+      }),
+    )
+    .isInt({ min: 1 })
+    .withMessage((value, { req, path }) =>
+      req.t("validation.integer", {
+        field: req.t("attributes." + path),
+      }),
+    )
+    .toInt()
+    .custom(async (value, { req, path }) => {
+      const  status = await taskStatusRepository.find({
+        field: "id",
+        value,
+      });
+
+      if (!status) {
+        throw new Error(
+          req.t("validation.exists", {
+            field: req.t("attributes." + path),
+          }),
+        );
+      }
+
+      return true;
+    }),
 ];
 
 module.exports = CreateTaskValidator;

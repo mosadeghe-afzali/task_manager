@@ -2,7 +2,7 @@ const taskRepository = require("../repositories/TaskRepository");
 const ApiError = require("../helpers/ApiError");
 
 const store = async (input) => {
-  
+  console.log(input, 'input')
 };
 const findMany = async (options) => {
   return await taskRepository.findMany(options);
