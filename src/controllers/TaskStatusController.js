@@ -8,10 +8,13 @@ const index = async (req, res, next) => {
     const limit = parseInt(req.query.limit, 10) || 10;
     const skip = (page - 1) * limit;
     const projectId = req.params.projectId;
+    console.log(projectId, 'ppppppppppppppppppppppp')
     const { statuses, totalCount } = await taskStatusService.findMany({
       skip,
       limit,
-      projectId
+      where: {
+        projectId: parseInt(projectId)
+      }
     });
 
     return res.status(200).json({

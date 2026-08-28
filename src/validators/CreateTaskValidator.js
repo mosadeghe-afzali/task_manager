@@ -181,8 +181,7 @@ const CreateTaskValidator = [
         throw new Error('تخمین زمان نمی‌تواند منفی باشد.');
       }
       return true;
-    })
-    .trim(),
+    }),
 
   // --- due Date ---
   body("dueDate")

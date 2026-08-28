@@ -2,7 +2,16 @@ const taskRepository = require("../repositories/TaskRepository");
 const ApiError = require("../helpers/ApiError");
 
 const store = async (input) => {
-  console.log(input, 'input')
+  const lastTask = await taskRepository.findFirst({
+    where: {
+      projectId: input.projectId,
+    },
+    orderBy: {issueNumber: 'desc'}
+  });
+  const issueNumber = lastTask ? lastTask.issueNumber + 1 : 1;
+  input.issueNumber = issueNumber;
+
+  return await taskRepository.create(input);
 };
 const findMany = async (options) => {
   return await taskRepository.findMany(options);

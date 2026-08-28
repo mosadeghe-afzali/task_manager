@@ -3,8 +3,15 @@ const { prisma } = require('../configs/db');
 const TaskRepository = {
   async create(input) {
     return await prisma.Task.create({
-      data: input
+      data: input,
+      select: {
+        id: true
+      }
     });
+  },
+
+  async findFirst(input) {
+    return await prisma.Task.findFirst(input);
   },
 
   async find(input) {
