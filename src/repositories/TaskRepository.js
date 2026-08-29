@@ -23,9 +23,76 @@ const TaskRepository = {
     });
   },
 
-  async findById(projectId) {
+  async findById(taskId) {
     return await prisma.Task.findUniqueOrThrow({
-      where: { id: projectId }
+      where: { id: taskId },
+      select: {
+        id: true,
+        issueNumber: true,
+        title: true,
+        description: true,
+        priority: true,
+        estimatedHours: true,
+        spentHours: true,
+        position: true,
+        startDate: true,
+        dueDate: true,
+        completedAt: true,
+        createdAt: true,
+        updatedAt: true,
+        status: {
+          select: {
+            id: true,
+            name: true,
+            color: true
+          }
+        },
+        assignee: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            avatar: true,
+            email: true
+          }
+        },
+        reporter: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            avatar: true
+          }
+        },
+        project: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        team: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        parent: {
+          select: {
+            id: true,
+            issueNumber: true,
+            title: true
+          }
+        },
+        children: {
+          select: {
+            id: true,
+            issueNumber: true,
+            title: true
+          }
+        },
+        comments: true,
+        _count: true
+      }
     });
   },
 
@@ -49,19 +116,32 @@ const TaskRepository = {
     if (options?.selectFields && options.selectFields.length > 0) {
       prismaArgs.select = {};
       options.selectFields.forEach(field => {
-        prismaArgs.select[field] = true;
+        if (typeof field === 'string') {
+          prismaArgs.select[field] = true;
+        } else if (typeof field === 'object' && field !== null) {
+          const key = Object.keys(field)[0];
+
+          const subFields = field[key];
+          
+          prismaArgs.select[key] = {
+            select: subFields.reduce((acc, subField) => {
+              acc[subField] = true;
+              return acc;
+            }, {})
+          };
+        }
       });
     }
 
     console.log(prismaArgs, 'prisma arguments', countArgs);
 
-    const [projects, totalCount] = await Promise.all([
+    const [tasks, totalCount] = await Promise.all([
       prisma.Task.findMany(prismaArgs),
       prisma.Task.count(countArgs) // شمارش کل بدون اعمال take و skip
     ]);
 
     return {
-      projects,
+      tasks,
       totalCount
     };
   },

@@ -6,27 +6,16 @@ const index = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 10;
-    const skip = (page - 1) * limit;
 
-    const { projects, totalCount } = await taskService.findMany({
-      skip,
-      limit,
-      selectFields: [
-        "id",
-        "name",
-        "key",
-        "description",
-        "icon",
-        "status",
-        "startDate",
-        "endDate",
-      ],
+    const { tasks, totalCount } = await taskService.findMany({
+      page,
+      limit
     });
 
     return res.status(200).json({
       success: true,
       message: "درخواست با موفقیت انجام شد.",
-      data: projects,
+      data: tasks,
       meta: {
         total_items: totalCount,
         current_page: page,
@@ -43,9 +32,9 @@ const index = async (req, res, next) => {
 };
 
 const show = async (req, res, next) => {
-  projectId = parseInt(req.params.projectId);
+  taskId = parseInt(req.params.taskId);
   try {
-    const project = await taskService.findById(projectId);
+    const project = await taskService.findById(taskId);
     return res.status(200).json({
       success: true,
       message: "درخواست با موفقیت انجام شد.",
@@ -102,10 +91,14 @@ const taskPriorities = async (req, res, next) => {
     next(error);
   }
 };
+const update = async (req, res, next) => {
+  console.log('update')
+};
 
 module.exports = {
   store,
   index,
   show,
-  taskPriorities
+  taskPriorities,
+  update,
 };

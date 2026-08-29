@@ -17,4 +17,9 @@ router
   .post(createTaskValidator, taskController.store);
 
 router.route("/priorities").get(taskController.taskPriorities);
+
+router
+  .route("/:taskId")
+  .get(taskController.show)
+  .put(taskController.update)
 module.exports = router;
