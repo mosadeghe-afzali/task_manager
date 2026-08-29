@@ -12,7 +12,6 @@ const addProjectMemberValidator = require("../validators/AddProjectMemberValidat
 const TeamController = require("../controllers/TeamController");
 const CreateTeamValidator = require("../validators/CreateTeamValidator");
 
-
 const taskStatusController = require("../controllers/TaskStatusController");
 const createTaskStatusValidator = require("../validators/CreateTaskStatusValidator");
 
@@ -25,6 +24,9 @@ router
   .get(projectController.index)
   .post(createProjectValidator, projectController.store);
 
+router.route("/statuses").get(projectController.projectStatuses);
+
+router.route("/roles").get(projectController.projectRoles);
 router
   .route("/:projectId")
   .get(projectController.show)
@@ -72,6 +74,6 @@ router
   .route("/:projectId/statuses/:statusId")
   .get(taskStatusController.show)
   .put(taskStatusController.update)
-  .delete(taskStatusController.destroy)
+  .delete(taskStatusController.destroy);
 
 module.exports = router;

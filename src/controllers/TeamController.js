@@ -143,11 +143,25 @@ const searchMembersToInvite = async (req, res, next) => {
   }
 };
 
+const teamRoles = async (req, res, next) => {
+  try {
+    const roles = await teamService.teamRoles();
+        return res.status(200).json({
+      success: true,
+      message: "درخواست با موفقیت انجام شد.",
+      data: roles
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   index,
   store,
   show,
   update,
   destroy,
-  searchMembersToInvite
+  searchMembersToInvite,
+  teamRoles
 };

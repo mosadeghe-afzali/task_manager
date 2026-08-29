@@ -1,4 +1,5 @@
 const { prisma } = require('../configs/db');
+const { TaskPriority } = require("@prisma/client");
 
 const TaskRepository = {
   async create(input) {
@@ -79,6 +80,9 @@ const TaskRepository = {
         id: parseInt(projectId)
       }
     });
+  },
+  async taskPriorities() {
+    return TaskPriority;
   }
   
 };

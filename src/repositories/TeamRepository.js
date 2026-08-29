@@ -1,4 +1,5 @@
 const { prisma } = require("../configs/db");
+const { TeamRole } = require("@prisma/client");
 
 const TeamRepository = {
   async create(input) {
@@ -46,11 +47,11 @@ const TeamRepository = {
       prismaArgs.select = options.select;
     }
 
-    console.log(prismaArgs, 'prisma arguments', countArgs);
+    console.log(prismaArgs, "prisma arguments", countArgs);
 
     const [teams, totalCount] = await Promise.all([
       prisma.Team.findMany(prismaArgs),
-      prisma.Team.count(countArgs) // شمارش کل بدون اعمال take و skip
+      prisma.Team.count(countArgs), // شمارش کل بدون اعمال take و skip
     ]);
 
     return {
@@ -65,19 +66,22 @@ const TeamRepository = {
   async update(teamId, data) {
     return await prisma.Team.update({
       where: {
-        id: parseInt(teamId)
+        id: parseInt(teamId),
       },
-      data: data
+      data: data,
     });
   },
 
-  async delete (teamId) {
-  return await prisma.Team.delete({
-    where: {
-      id: parseInt(teamId),
-    },
-  });
-},
+  async delete(teamId) {
+    return await prisma.Team.delete({
+      where: {
+        id: parseInt(teamId),
+      },
+    });
+  },
+  async teamRoles() {
+    return TeamRole;
+  },
 };
 
 module.exports = TeamRepository;

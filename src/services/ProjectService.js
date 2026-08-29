@@ -3,7 +3,7 @@ const projectMemberRepository = require("../repositories/ProjectMemberRepository
 const ApiError = require("../helpers/ApiError");
 const { check } = require("express-validator");
 const ProjectMemberRepository = require("../repositories/ProjectMemberRepository");
-const userService = require('./UserService');
+const userService = require("./UserService");
 const { CodeSquare } = require("lucide-static");
 
 const store = async (input) => {
@@ -29,17 +29,23 @@ const findFirstProjectMember = async (input) => {
   return await projectMemberRepository.findFirst(input);
 };
 
+const projectStatuses = async () => {
+  return await projectRepository.projectStatuses();
+};
+
+const projectRoles = async () => {
+  return await projectRepository.projectRoles();
+};
+
 const addProjectMember = async (projectId, input) => {
   const { userIds, role } = input;
 
-  const existingMembers = await projectMemberRepository.findMany(
-    {
-      where: {
-        projectId: projectId,
-        userId: { in: userIds }
-      }
-    }
-  )
+  const existingMembers = await projectMemberRepository.findMany({
+    where: {
+      projectId: projectId,
+      userId: { in: userIds },
+    },
+  });
 
   if (existingMembers.members.length > 0) {
     throw new ApiError("کاربر عضو پروژه است.", 422);
@@ -48,9 +54,9 @@ const addProjectMember = async (projectId, input) => {
   const memberData = userIds.map((userId) => ({
     userId,
     projectId,
-    role
-  }))
-  console.log(memberData, "member dataaaaaaaaaaaa")
+    role,
+  }));
+  console.log(memberData, "member dataaaaaaaaaaaa");
   return await projectMemberRepository.createMany(memberData);
 };
 
@@ -107,21 +113,21 @@ const getProjectMembers = async (options) => {
       joinedAt: "desc",
     },
   });
-}
+};
 
 const findProjectMember = async (memberId) => {
   return projectMemberRepository.findById(memberId);
-}
+};
 
 const deleteProjectMemeber = async (memberId) => {
   return projectMemberRepository.delete(memberId);
-}
+};
 
 const searchUsersForProject = async (projectId, query) => {
-  if (!query || query.trim() === '') {
+  if (!query || query.trim() === "") {
     return [];
   }
-  console.log(projectId, query, 'in ppppppppppppp')
+  console.log(projectId, query, "in ppppppppppppp");
 
   const currentMembers = await projectMemberRepository.findMany({
     where: { projectId },
@@ -131,12 +137,8 @@ const searchUsersForProject = async (projectId, query) => {
   const membersList = currentMembers?.members || [];
 
   const existingUserIds = membersList.map((member) => member.userId);
-  console.log(existingUserIds, query, 'in ssssssssssssssss')
-  return await userService.searchUsers(
-    query.trim(),
-    existingUserIds,
-    10,
-  );
+  console.log(existingUserIds, query, "in ssssssssssssssss");
+  return await userService.searchUsers(query.trim(), existingUserIds, 10);
 };
 
 const getProjectMemberForTeam = async (options) => {
@@ -192,7 +194,7 @@ const getProjectMemberForTeam = async (options) => {
       joinedAt: "desc",
     },
   });
-}
+};
 
 module.exports = {
   store,
@@ -205,5 +207,7 @@ module.exports = {
   findProjectMember,
   deleteProjectMemeber,
   searchUsersForProject,
-  getProjectMemberForTeam
+  getProjectMemberForTeam,
+  projectStatuses,
+  projectRoles
 };

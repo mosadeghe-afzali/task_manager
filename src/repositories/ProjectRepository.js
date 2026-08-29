@@ -1,10 +1,11 @@
-const { prisma } = require('../configs/db');
-const { findMany } = require('./TeamRepository');
+const { prisma } = require("../configs/db");
+const { findMany } = require("./TeamRepository");
+const { ProjectStatus, ProjectRole } = require("@prisma/client");
 
 const ProjectRepository = {
   async create(input) {
     return await prisma.Project.create({
-      data: input
+      data: input,
     });
   },
 
@@ -12,13 +13,13 @@ const ProjectRepository = {
     field = input.field;
     value = input.value;
     return await prisma.Project.findUnique({
-      where: { [field]: value }
+      where: { [field]: value },
     });
   },
 
   async findById(projectId) {
     return await prisma.Project.findUniqueOrThrow({
-      where: { id: projectId }
+      where: { id: projectId },
     });
   },
 
@@ -41,40 +42,45 @@ const ProjectRepository = {
 
     if (options?.selectFields && options.selectFields.length > 0) {
       prismaArgs.select = {};
-      options.selectFields.forEach(field => {
+      options.selectFields.forEach((field) => {
         prismaArgs.select[field] = true;
       });
     }
 
-    console.log(prismaArgs, 'prisma arguments', countArgs);
+    console.log(prismaArgs, "prisma arguments", countArgs);
 
     const [projects, totalCount] = await Promise.all([
       prisma.Project.findMany(prismaArgs),
-      prisma.Project.count(countArgs) // شمارش کل بدون اعمال take و skip
+      prisma.Project.count(countArgs), // شمارش کل بدون اعمال take و skip
     ]);
 
     return {
       projects,
-      totalCount
+      totalCount,
     };
   },
 
   async update(projectId, data) {
     return await prisma.Project.update({
       where: {
-        id: parseInt(projectId)
+        id: parseInt(projectId),
       },
-      data: data
+      data: data,
     });
   },
   async delete(projectId) {
     return await prisma.Project.delete({
       where: {
-        id: parseInt(projectId)
-      }
+        id: parseInt(projectId),
+      },
     });
+  },
+  async projectStatuses() {
+    return await ProjectStatus;
+  },
+  async projectRoles() {
+    return await ProjectRole;
   }
-  
 };
 
 module.exports = ProjectRepository;

@@ -9,12 +9,14 @@ const protect = passport.authenticate("jwt", { session: false });
 const teamMemberController = require('../controllers/TeamMemberController');
 const addTeamMemberValidator = require('../validators/AddTeamMemberValidator');
 router.use(protect);
+router.route("/roles").get(TeamController.teamRoles);
 
 router
   .route("/:teamId")
   .get(TeamController.show)
   .put(TeamController.update)
   .delete(TeamController.destroy);
+
 
 router
   .route("/:teamId/members")

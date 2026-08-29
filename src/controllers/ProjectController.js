@@ -137,11 +137,37 @@ const destroy = async (req, res) => {
     });
   }
 }
+const projectStatuses = async (req, res, next) => {
+  try {
+    const statuses = await projectService.projectStatuses();
+        return res.status(200).json({
+      success: true,
+      message: "درخواست با موفقیت انجام شد.",
+      data: statuses
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 
+const projectRoles = async (req, res, next) => {
+  try {
+    const roles = await projectService.projectRoles();
+        return res.status(200).json({
+      success: true,
+      message: "درخواست با موفقیت انجام شد.",
+      data: roles
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 module.exports = {
   store,
   index,
   show,
   update,
-  destroy
+  destroy,
+  projectStatuses,
+  projectRoles
 };

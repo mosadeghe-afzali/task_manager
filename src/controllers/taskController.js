@@ -11,7 +11,16 @@ const index = async (req, res, next) => {
     const { projects, totalCount } = await taskService.findMany({
       skip,
       limit,
-      selectFields: ["id", "name", "key", "description", "icon", "status", "startDate", "endDate"],
+      selectFields: [
+        "id",
+        "name",
+        "key",
+        "description",
+        "icon",
+        "status",
+        "startDate",
+        "endDate",
+      ],
     });
 
     return res.status(200).json({
@@ -22,10 +31,9 @@ const index = async (req, res, next) => {
         total_items: totalCount,
         current_page: page,
         per_page: limit,
-        total_pages: Math.ceil(totalCount / limit)
-      }
+        total_pages: Math.ceil(totalCount / limit),
+      },
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -37,27 +45,26 @@ const index = async (req, res, next) => {
 const show = async (req, res, next) => {
   projectId = parseInt(req.params.projectId);
   try {
-    const project = await taskService.findById(projectId)
+    const project = await taskService.findById(projectId);
     return res.status(200).json({
       success: true,
       message: "درخواست با موفقیت انجام شد.",
-      data: project
-    })
+      data: project,
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
       message: error.message,
     });
   }
-}
+};
 
 const store = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-
     const formattedErrors = {};
-    errors.array().forEach(err => {
+    errors.array().forEach((err) => {
       if (!formattedErrors[err.path]) {
         formattedErrors[err.path] = err.msg;
       }
@@ -65,7 +72,7 @@ const store = async (req, res, next) => {
     return res.status(422).json({
       success: false,
       message: "درخواست شما با خطا مواجه شد.",
-      errors: formattedErrors
+      errors: formattedErrors,
     });
   }
 
@@ -78,15 +85,27 @@ const store = async (req, res, next) => {
         task,
       },
     });
-
   } catch (error) {
-    return next(error)
+    return next(error);
   }
 };
 
+const taskPriorities = async (req, res, next) => {
+  try {
+    const priorities = await taskService.taskPriorities();
+    return res.status(201).json({
+      success: true,
+      message: "درخواست با موفقیت انجام شد.",
+      data: priorities,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
   store,
   index,
   show,
+  taskPriorities
 };

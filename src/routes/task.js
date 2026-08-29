@@ -7,7 +7,6 @@ const taskController = require("../controllers/taskController");
 const createTaskValidator = require("../validators/CreateTaskValidator");
 const { create } = require("../repositories/TeamRepository");
 
-
 const protect = passport.authenticate("jwt", { session: false });
 
 router.use(protect);
@@ -17,4 +16,5 @@ router
   .get(taskController.index)
   .post(createTaskValidator, taskController.store);
 
+router.route("/priorities").get(taskController.taskPriorities);
 module.exports = router;

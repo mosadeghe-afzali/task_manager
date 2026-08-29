@@ -6,7 +6,7 @@ const store = async (input) => {
     where: {
       projectId: input.projectId,
     },
-    orderBy: {issueNumber: 'desc'}
+    orderBy: { issueNumber: "desc" },
   });
   const issueNumber = lastTask ? lastTask.issueNumber + 1 : 1;
   input.issueNumber = issueNumber;
@@ -28,6 +28,9 @@ const update = async (taskId, data) => {
 const destroy = async (taskId) => {
   return await taskRepository.delete(taskId);
 };
+const taskPriorities = async () => {
+  return taskRepository.taskPriorities();
+};
 
 module.exports = {
   store,
@@ -35,4 +38,5 @@ module.exports = {
   findById,
   update,
   destroy,
+  taskPriorities
 };
