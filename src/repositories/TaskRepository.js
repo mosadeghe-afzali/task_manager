@@ -146,18 +146,19 @@ const TaskRepository = {
     };
   },
 
-  async update(projectId, data) {
+  async update(taskId, data) {
     return await prisma.Task.update({
       where: {
-        id: parseInt(projectId)
+        id: parseInt(taskId)
       },
       data: data
     });
   },
-  async delete(projectId) {
+  
+  async delete(taskId) {
     return await prisma.Task.delete({
       where: {
-        id: parseInt(projectId)
+        id: parseInt(taskId)
       }
     });
   },

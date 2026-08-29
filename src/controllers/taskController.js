@@ -92,7 +92,36 @@ const taskPriorities = async (req, res, next) => {
   }
 };
 const update = async (req, res, next) => {
-  console.log('update')
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    const formattedErrors = {};
+    errors.array().forEach((err) => {
+      if (!formattedErrors[err.path]) {
+        formattedErrors[err.path] = err.msg;
+      }
+    });
+    return res.status(422).json({
+      success: false,
+      message: "درخواست شما با خطا مواجه شد.",
+      errors: formattedErrors,
+    });
+  }
+
+  try {
+    const taskId = parseInt(req.params.taskId);
+
+    const task = await taskService.update(taskId, req.body);
+    return res.status(201).json({
+      success: true,
+      message: "درخواست با موفقیت انجام شد.",
+      data: {
+        task,
+      },
+    });
+  } catch (error) {
+    return next(error);
+  }
 };
 
 module.exports = {
