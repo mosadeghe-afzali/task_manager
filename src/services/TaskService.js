@@ -37,11 +37,24 @@ const findMany = async (input) => {
       _count: ["comments", "children"],
     },
   ];
+  const orderBy = [
+    { statusId: 'asc' },
+    { position: 'asc' }
+  ];
+
   const options = {
     limit: input.limit,
     skip,
     selectFields,
+    orderBy
   };
+  if(input.projectId) {
+    options.where = {
+      projectId: parseInt(input.projectId)
+    }
+  }
+  
+  console.log(options, 'opptionssssssssss')
 
   return await taskRepository.findMany(options);
 };

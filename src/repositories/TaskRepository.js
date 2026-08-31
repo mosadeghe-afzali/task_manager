@@ -132,8 +132,9 @@ const TaskRepository = {
         }
       });
     }
-
-    console.log(prismaArgs, 'prisma arguments', countArgs);
+    if (options?.orderBy && options.orderBy.length > 0) {
+      prismaArgs.orderBy = options.orderBy
+    }
 
     const [tasks, totalCount] = await Promise.all([
       prisma.Task.findMany(prismaArgs),

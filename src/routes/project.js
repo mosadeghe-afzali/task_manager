@@ -15,6 +15,10 @@ const CreateTeamValidator = require("../validators/CreateTeamValidator");
 const taskStatusController = require("../controllers/TaskStatusController");
 const createTaskStatusValidator = require("../validators/CreateTaskStatusValidator");
 
+
+const taskController = require("../controllers/taskController");
+const createTaskValidator = require("../validators/CreateTaskValidator");
+
 const protect = passport.authenticate("jwt", { session: false });
 
 router.use(protect);
@@ -75,5 +79,10 @@ router
   .get(taskStatusController.show)
   .put(taskStatusController.update)
   .delete(taskStatusController.destroy);
+
+router
+  .route("/:projectId/tasks")
+  .get(taskController.index)
+  .post(createTaskValidator, taskController.store);
 
 module.exports = router;
