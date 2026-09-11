@@ -40,6 +40,8 @@
     "assigneeId": "شناسه مسئول تیکت",
     "requesterId": "شناسهدرخواست دهنده",
     "color": "رنگ",
-    "sortOrder": "ترتیب نمایش"
+    "sortOrder": "ترتیب نمایش",
+    "content": "محتوا",
+    "taskId": "تسک"
   }
 }

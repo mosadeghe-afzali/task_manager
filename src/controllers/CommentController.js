@@ -1,5 +1,5 @@
 const { validationResult } = require("express-validator");
-const taskService = require("../services/TaskService");
+const commentService = require("../services/CommentService");
 
 const index = async (req, res, next) => {
   try {
@@ -7,7 +7,7 @@ const index = async (req, res, next) => {
     const limit = parseInt(req.query.limit, 10) || 10;
     const projectId = req.params.projectId;
     console.log(projectId, ' p id')
-    const { tasks, totalCount } = await taskService.findMany({
+    const { comments, totalCount } = await commentService.findMany({
       page,
       limit,
       projectId
@@ -16,7 +16,7 @@ const index = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: "درخواست با موفقیت انجام شد.",
-      data: tasks,
+      data: comments,
       meta: {
         total_items: totalCount,
         current_page: page,
@@ -33,9 +33,9 @@ const index = async (req, res, next) => {
 };
 
 const show = async (req, res, next) => {
-  taskId = parseInt(req.params.taskId);
+  commentId = parseInt(req.params.commentId);
   try {
-    const project = await taskService.findById(taskId);
+    const project = await commentService.findById(commentId);
     return res.status(200).json({
       success: true,
       message: "درخواست با موفقیت انجام شد.",
@@ -67,12 +67,12 @@ const store = async (req, res, next) => {
   }
 
   try {
-    const task = await taskService.store(req.body);
+    const comment = await commentService.store(req.body);
     return res.status(201).json({
       success: true,
       message: "درخواست با موفقیت انجام شد.",
       data: {
-        task,
+        comment,
       },
     });
   } catch (error) {
@@ -80,18 +80,7 @@ const store = async (req, res, next) => {
   }
 };
 
-const taskPriorities = async (req, res, next) => {
-  try {
-    const priorities = await taskService.taskPriorities();
-    return res.status(201).json({
-      success: true,
-      message: "درخواست با موفقیت انجام شد.",
-      data: priorities,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+
 const update = async (req, res, next) => {
   const errors = validationResult(req);
 
@@ -110,14 +99,14 @@ const update = async (req, res, next) => {
   }
 
   try {
-    const taskId = parseInt(req.params.taskId);
+    const commentId = parseInt(req.params.commentId);
 
-    const task = await taskService.update(taskId, req.body);
+    const comment = await commentService.update(commentId, req.body);
     return res.status(201).json({
       success: true,
       message: "درخواست با موفقیت انجام شد.",
       data: {
-        task,
+        comment,
       },
     });
   } catch (error) {
@@ -129,6 +118,5 @@ module.exports = {
   store,
   index,
   show,
-  taskPriorities,
   update,
 };
