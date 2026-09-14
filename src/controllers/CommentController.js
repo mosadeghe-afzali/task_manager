@@ -5,12 +5,12 @@ const index = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 10;
-    const projectId = req.params.projectId;
-    console.log(projectId, ' p id')
+    const taskId = req.params.taskId;
+    console.log(taskId, ' p id')
     const { comments, totalCount } = await commentService.findMany({
       page,
       limit,
-      projectId
+      taskId
     });
 
     return res.status(200).json({

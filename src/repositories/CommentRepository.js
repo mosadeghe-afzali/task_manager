@@ -70,7 +70,7 @@ const CommentRepository = {
 
     const [tasks, totalCount] = await Promise.all([
       prisma.Comment.findMany(prismaArgs),
-      prisma.Comment.count(countArgs) // شمارش کل بدون اعمال take و skip
+      prisma.Comment.count(countArgs)
     ]);
 
     return {

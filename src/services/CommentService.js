@@ -9,41 +9,30 @@ const findMany = async (input) => {
   const skip = (input.page - 1) * input.limit;
   const selectFields = [
     "id",
-    "issueNumber",
-    "title",
-    "priority",
-    "dueDate",
-    "startDate",
-    "completedAt",
+    "taskId",
+    "userId",
+    "content",
     "createdAt",
     {
-      status: ["id", "name", "color"],
-    },
-    {
-      assignee: ["id", "firstName", "lastName"],
-    },
-    {
-      _count: ["comments", "children"],
+      user: ["id", "firstName", "lastName"],
     },
   ];
-  const orderBy = [
-    { statusId: 'asc' },
-    { position: 'asc' }
-  ];
+console.log(selectFields, 'sssssssssssssss')
+  const orderBy = [{createdAt: 'desc'}];
 
   const options = {
     limit: input.limit,
     skip,
     selectFields,
-    orderBy
+    orderBy,
   };
-  if(input.projectId) {
-    options.where = {
-      projectId: parseInt(input.projectId)
-    }
-  }
   
-  console.log(options, 'opptionssssssssss')
+  options.where = {
+    taskId: parseInt(input.taskId),
+  };
+  
+
+  console.log(options, "opptionssssssssss");
 
   return await commentRepository.findMany(options);
 };
@@ -59,8 +48,6 @@ const update = async (commentId, data) => {
 const destroy = async (commentId) => {
   return await commentRepository.delete(commentId);
 };
-
-
 
 module.exports = {
   store,
