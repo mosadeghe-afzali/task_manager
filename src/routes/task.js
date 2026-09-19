@@ -34,7 +34,7 @@ router
   .post(createCommentValidator, commentController.store)
 
 router
-  .route("/:taskId/comments/commentId")
+  .route("/:taskId/comments/:commentId")
   .get(commentController.show)
   .put(updateCommentValidator, commentController.update)
 module.exports = router;

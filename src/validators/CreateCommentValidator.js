@@ -35,10 +35,11 @@ const CreateCommentValidator = [
           }),
         );
       }
+      req.projectId = task.projectId;
 
       return true;
     }),
-  param("userId")
+  body("userId")
     .notEmpty()
     .withMessage((value, { req, path }) =>
       req.t("validation.required", {
@@ -53,11 +54,10 @@ const CreateCommentValidator = [
     )
     .toInt()
     .custom(async (value, { req, path }) => {
-      const user = await projectMemberRepository.find({
-        field: "usserId",
-        value,
+      const user = await projectMemberRepository.findFirst({
+        userId: value,
+        projectId: req.projectId
       });
-
       if (!user) {
         throw new Error(
           req.t("validation.exists", {

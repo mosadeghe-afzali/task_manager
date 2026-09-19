@@ -12,7 +12,8 @@
     "array": "{{ field }} باید آرایه باشد.",
     "date": "{{field}}  باید تاریخ با فرمت معتبر باشد.",
     "after_date": "{{field}}  باید بزرگتر از فیلد {{ after }}  باشد",
-    "integer": "{{ field }} باید مقدار عددی باشد."
+    "integer": "{{ field }} باید مقدار عددی باشد.",
+    "belongsTo": "{{field}} متعلق به شما نیست."
   },
 
   "attributes": {
@@ -42,6 +43,7 @@
     "color": "رنگ",
     "sortOrder": "ترتیب نمایش",
     "content": "محتوا",
-    "taskId": "تسک"
+    "taskId": "تسک",
+    "commentId": "کامنت"
   }
 }

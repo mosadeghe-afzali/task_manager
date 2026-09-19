@@ -18,7 +18,7 @@ const findMany = async (input) => {
     },
   ];
 console.log(selectFields, 'sssssssssssssss')
-  const orderBy = [{createdAt: 'desc'}];
+  const orderBy = [{createdAt: "desc"}];
 
   const options = {
     limit: input.limit,
@@ -31,9 +31,6 @@ console.log(selectFields, 'sssssssssssssss')
     taskId: parseInt(input.taskId),
   };
   
-
-  console.log(options, "opptionssssssssss");
-
   return await commentRepository.findMany(options);
 };
 

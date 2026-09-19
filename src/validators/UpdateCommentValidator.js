@@ -34,6 +34,20 @@ const UpdateCommentValidator = [
 
       return true;
     }),
+  body("userId")
+    .notEmpty()
+    .withMessage((value, { req, path }) =>
+      req.t("validation.required", {
+        field: req.t("attributes." + path),
+      }),
+    )
+    .isInt({ min: 1 })
+    .withMessage((value, { req, path }) =>
+      req.t("validation.integer", {
+        field: req.t("attributes." + path),
+      }),
+    )
+    .toInt(),
   param("commentId")
     .notEmpty()
     .withMessage((value, { req, path }) =>
@@ -61,32 +75,9 @@ const UpdateCommentValidator = [
           }),
         );
       }
-
-      return true;
-    }),
-  body("userId")
-    .notEmpty()
-    .withMessage((value, { req, path }) =>
-      req.t("validation.required", {
-        field: req.t("attributes." + path),
-      }),
-    )
-    .isInt({ min: 1 })
-    .withMessage((value, { req, path }) =>
-      req.t("validation.integer", {
-        field: req.t("attributes." + path),
-      }),
-    )
-    .toInt()
-    .custom(async (value, { req, path }) => {
-      const user = await projectMemberRepository.find({
-        field: "usserId",
-        value,
-      });
-
-      if (!user) {
+      if (comment.userId != parseInt(req.body.userId)) {
         throw new Error(
-          req.t("validation.exists", {
+          req.t("validation.belongsTo", {
             field: req.t("attributes." + path),
           }),
         );
@@ -94,6 +85,7 @@ const UpdateCommentValidator = [
 
       return true;
     }),
+
   // --- content ---
   body("content")
     .notEmpty()

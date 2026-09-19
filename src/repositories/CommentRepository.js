@@ -68,13 +68,13 @@ const CommentRepository = {
       prismaArgs.orderBy = options.orderBy
     }
 
-    const [tasks, totalCount] = await Promise.all([
+    const [comments, totalCount] = await Promise.all([
       prisma.Comment.findMany(prismaArgs),
       prisma.Comment.count(countArgs)
     ]);
 
     return {
-      tasks,
+      comments,
       totalCount
     };
   },

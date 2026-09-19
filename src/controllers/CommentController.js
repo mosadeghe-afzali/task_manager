@@ -67,6 +67,8 @@ const store = async (req, res, next) => {
   }
 
   try {
+    const taskId = parseInt(req.params.taskId);
+    req.body.taskId = taskId;
     const comment = await commentService.store(req.body);
     return res.status(201).json({
       success: true,
